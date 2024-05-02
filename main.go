@@ -6,6 +6,7 @@ import (
 	"cats-social/helpers"
 	"cats-social/model/properties"
 	"cats-social/src/handler"
+	"cats-social/src/middleware"
 	"cats-social/src/repository"
 	"cats-social/src/usecase"
 	"os"
@@ -22,6 +23,9 @@ func main() {
 
 	db := db.InitPostgreDB(postgreConfig)
 	helper := helpers.NewHelper()
+
+	// MIDDLEWARE
+	middleware := middleware.NewMiddleware(helper)
 	// REPOSITORY
 	userRepository := repository.NewUserRepository(db)
 
@@ -33,15 +37,19 @@ func main() {
 	authHandler := handler.NewAuthHandler(authUsecase)
 
 	//	ROUTE
-	r.GET("/cat", catHandler.GetCatById)
-	r.POST("/register", authHandler.Register)
-	r.POST("/login", authHandler.Login)
-
-	r.GET("/", func(c *gin.Context) {
+	r.GET("/health", func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"message": "hello",
 		})
 	})
+
+	r.POST("/register", authHandler.Register)
+	r.POST("/login", authHandler.Login)
+
+	authorized := r.Group("/api")
+	authorized.Use(middleware.AuthMiddleware)
+
+	authorized.GET("/cat", catHandler.GetCatById)
 
 	r.Run()
 }
