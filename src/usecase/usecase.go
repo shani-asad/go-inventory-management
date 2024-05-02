@@ -7,6 +7,6 @@ type CatUsecaseInterface interface {
 }
 
 type AuthUsecaseInterface interface {
-	Register(request dto.RequestAuth)
-	Login(request dto.RequestAuth)
+	Register(request dto.RequestCreateUser) error
+	Login(request dto.RequestAuth) error
 }

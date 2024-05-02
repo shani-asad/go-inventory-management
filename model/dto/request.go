@@ -1,6 +1,12 @@
 package dto
 
 type RequestAuth struct {
-	Username string `json:"username"`
+	Email    string `json:"email"`
 	Password string `json:"password"`
+}
+
+type RequestCreateUser struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+	Name     string `json:"name"`
 }
