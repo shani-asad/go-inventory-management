@@ -15,7 +15,11 @@ func NewUserRepository(db *sql.DB) UserRepositoryInterface {
 }
 
 func (r *UserRepository) GetUserByEmail(ctx context.Context, email string) (response database.User, err error) {
-	return response, err
+	err = r.db.QueryRowContext(ctx, "SELECT id, name, email, password FROM users WHERE email = $1", email).Scan(&response.Id, &response.Name, &response.Email, &response.Password)
+	if err != nil {
+		return
+	}
+	return
 }
 
 func (r *UserRepository) CreateUser(ctx context.Context, data database.User) (err error) {

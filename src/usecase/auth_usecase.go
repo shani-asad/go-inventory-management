@@ -1,10 +1,12 @@
 package usecase
 
 import (
+	"cats-social/helpers"
 	"cats-social/model/database"
 	"cats-social/model/dto"
 	"cats-social/src/repository"
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -13,10 +15,13 @@ import (
 
 type AuthUsecase struct {
 	iUserRepository repository.UserRepositoryInterface
+	helper          helpers.HelperInterface
 }
 
-func NewAuthUsecase(iUserRepository repository.UserRepositoryInterface) AuthUsecaseInterface {
-	return &AuthUsecase{iUserRepository}
+func NewAuthUsecase(
+	iUserRepository repository.UserRepositoryInterface,
+	helper helpers.HelperInterface) AuthUsecaseInterface {
+	return &AuthUsecase{iUserRepository, helper}
 }
 
 func (u *AuthUsecase) Register(request dto.RequestCreateUser) error {
@@ -37,16 +42,29 @@ func (u *AuthUsecase) Register(request dto.RequestCreateUser) error {
 	return err
 }
 
-func (u *AuthUsecase) Login(request dto.RequestAuth) error {
+func (u *AuthUsecase) Login(request dto.RequestAuth) (token string, err error) {
 	// check creds on database
-	data, err := u.iUserRepository.GetUserByEmail(context.TODO(), request.Email)
+	userData, err := u.iUserRepository.GetUserByEmail(context.TODO(), request.Email)
 	if err != nil {
-		return err
+		return token, errors.New("wrong credentials")
 	}
 
-	fmt.Println(data)
+	fmt.Println(userData)
 
 	// check the password
+	isValid := u.verifyPassword(request.Password, userData.Password)
+	if !isValid {
+		return token, errors.New("wrong credentials")
+	}
 
-	return nil
+	token, _ = u.helper.GenerateToken(userData.Id)
+
+	return token, nil
+}
+
+func (u *AuthUsecase) verifyPassword(password, passwordHash string) bool {
+	byteHash := []byte(passwordHash)
+	err := bcrypt.CompareHashAndPassword(byteHash, []byte(password))
+
+	return err == nil
 }

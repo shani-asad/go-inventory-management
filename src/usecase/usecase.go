@@ -8,5 +8,5 @@ type CatUsecaseInterface interface {
 
 type AuthUsecaseInterface interface {
 	Register(request dto.RequestCreateUser) error
-	Login(request dto.RequestAuth) error
+	Login(request dto.RequestAuth) (token string, err error)
 }

@@ -3,6 +3,7 @@ package main
 import (
 	"cats-social/app/server"
 	"cats-social/db"
+	"cats-social/helpers"
 	"cats-social/model/properties"
 	"cats-social/src/handler"
 	"cats-social/src/repository"
@@ -20,12 +21,12 @@ func main() {
 	}
 
 	db := db.InitPostgreDB(postgreConfig)
-
+	helper := helpers.NewHelper()
 	// REPOSITORY
 	userRepository := repository.NewUserRepository(db)
 
 	// USECASE
-	authUsecase := usecase.NewAuthUsecase(userRepository)
+	authUsecase := usecase.NewAuthUsecase(userRepository, helper)
 
 	// HANDLER
 	catHandler := handler.NewCatHandler()

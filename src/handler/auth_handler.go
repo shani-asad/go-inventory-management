@@ -42,13 +42,13 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		return
 	}
 
-	err = h.iAuthUsecase.Login(request)
+	token, err := h.iAuthUsecase.Login(request)
 	if err != nil {
 		c.JSON(500, gin.H{"status": "internal server error", "message": err})
 		return
 	}
 
 	c.JSON(200, gin.H{
-		"message": "login success",
+		"token": token,
 	})
 }
