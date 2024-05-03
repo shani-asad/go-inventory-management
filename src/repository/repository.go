@@ -7,6 +7,7 @@ import (
 
 type CatRepositoryInterface interface {
 	GetCatById(id int) (response database.Cat, err error)
+	CreateCat(ctx context.Context, data database.Cat) (err error)
 }
 
 type UserRepositoryInterface interface {

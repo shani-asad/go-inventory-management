@@ -28,12 +28,14 @@ func main() {
 	middleware := middleware.NewMiddleware(helper)
 	// REPOSITORY
 	userRepository := repository.NewUserRepository(db)
+	catRepository := repository.NewCatRepository(db)
 
 	// USECASE
 	authUsecase := usecase.NewAuthUsecase(userRepository, helper)
+	catUsecase := usecase.NewCatUsecase(catRepository)
 
 	// HANDLER
-	catHandler := handler.NewCatHandler()
+	catHandler := handler.NewCatHandler(catUsecase)
 	authHandler := handler.NewAuthHandler(authUsecase)
 
 	//	ROUTE
@@ -49,6 +51,8 @@ func main() {
 	authorized := r.Group("/api")
 	authorized.Use(middleware.AuthMiddleware)
 
+	// CAT
+	r.POST("v1/cat", catHandler.AddCat)
 	authorized.GET("/cat", catHandler.GetCatById)
 
 	r.Run()
