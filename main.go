@@ -11,9 +11,10 @@ import (
 	"cats-social/src/usecase"
 	"os"
 
+	"fmt"
+
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
-	"fmt"
 )
 
 func main() {
@@ -37,13 +38,16 @@ func main() {
 	// REPOSITORY
 	userRepository := repository.NewUserRepository(db)
 	matchRepository := repository.NewMatchRepository(db)
+	catRepository := repository.NewCatRepository(db)
 
 	// USECASE
 	authUsecase := usecase.NewAuthUsecase(userRepository, helper)
 	matchUseCase := usecase.NewMatchUsecase(matchRepository, helper)
+	catUsecase := usecase.NewCatUsecase(catRepository)
+
 
 	// HANDLER
-	catHandler := handler.NewCatHandler()
+	catHandler := handler.NewCatHandler(catUsecase)
 	authHandler := handler.NewAuthHandler(authUsecase)
 	matchHandler := handler.NewMatchHandler(matchUseCase)
 
@@ -60,7 +64,9 @@ func main() {
 	authorized := r.Group("")
 	authorized.Use(middleware.AuthMiddleware)
 
-	authorized.GET("/v1/cat", catHandler.GetCatById)
+	// CAT
+	authorized.POST("v1/cat", catHandler.AddCat)
+	authorized.GET("v1/cat", catHandler.GetCatById)
 
 	authorized.POST("/v1/cat/match", matchHandler.CreateMatch)
 	authorized.GET("/v1/cat/match", matchHandler.GetMatch)

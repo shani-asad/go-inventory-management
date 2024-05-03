@@ -16,3 +16,11 @@ type RequestCreateMatch struct {
 	UserCatId	int `json:"userCatId"`
 	Message		string `json:"message"`
 }
+type RequestCreateCat struct {
+	Name 					string `json:"name"`
+	Race 					string `json:"race"`
+	Sex 					string `json:"sex"`
+	AgeInMonth 		int `json:"ageInMonth"`
+	Description 	string `json:"description"`
+	ImageUrls 		[]string `json:"imageUrls"`
+}
