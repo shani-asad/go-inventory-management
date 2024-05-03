@@ -11,11 +11,20 @@ import (
 	"cats-social/src/usecase"
 	"os"
 
+	"fmt"
+
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 )
 
 func main() {
 	r := server.InitServer()
+
+	err := 	godotenv.Load()
+    if err != nil {
+        fmt.Println("Error loading .env file:", err)
+        return
+    }
 
 	postgreConfig := properties.PostgreConfig{
 		DatabaseURL: os.Getenv("DATABASE_URL"),
@@ -45,15 +54,15 @@ func main() {
 		})
 	})
 
-	r.POST("/register", authHandler.Register)
-	r.POST("/login", authHandler.Login)
+	r.POST("/v1/register", authHandler.Register)
+	r.POST("/v1/login", authHandler.Login)
 
 	authorized := r.Group("/api")
 	authorized.Use(middleware.AuthMiddleware)
 
 	// CAT
-	r.POST("v1/cat", catHandler.AddCat)
-	authorized.GET("/cat", catHandler.GetCatById)
+	authorized.POST("v1/cat", catHandler.AddCat)
+	authorized.GET("v1/cat", catHandler.GetCatById)
 
 	r.Run()
 }

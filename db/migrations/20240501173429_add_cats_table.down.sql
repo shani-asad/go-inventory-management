@@ -1,1 +1,1 @@
-DROP TABLE cats;
+DROP TABLE IF EXISTS cats;
