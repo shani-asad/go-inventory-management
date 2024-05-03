@@ -13,12 +13,13 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	"fmt"
 )
 
 func main() {
 	r := server.InitServer()
 
-	err := 	
+	err := 	godotenv.Load()
     if err != nil {
         fmt.Println("Error loading .env file:", err)
         return
