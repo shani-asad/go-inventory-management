@@ -12,10 +12,17 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 )
 
 func main() {
 	r := server.InitServer()
+
+	err := 	
+    if err != nil {
+        fmt.Println("Error loading .env file:", err)
+        return
+    }
 
 	postgreConfig := properties.PostgreConfig{
 		DatabaseURL: os.Getenv("DATABASE_URL"),
@@ -43,13 +50,13 @@ func main() {
 		})
 	})
 
-	r.POST("/register", authHandler.Register)
-	r.POST("/login", authHandler.Login)
+	r.POST("/v1/register", authHandler.Register)
+	r.POST("/v1/login", authHandler.Login)
 
 	authorized := r.Group("/api")
 	authorized.Use(middleware.AuthMiddleware)
 
-	authorized.GET("/cat", catHandler.GetCatById)
+	authorized.GET("/v1/cat", catHandler.GetCatById)
 
 	r.Run()
 }
