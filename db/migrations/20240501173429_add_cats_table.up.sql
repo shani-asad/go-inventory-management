@@ -21,7 +21,8 @@ CREATE TABLE cats (
     age_in_month INT NOT NULL,
     description VARCHAR(20) NOT NULL,
     image_urls TEXT[] NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES users(id),
+    has_matched BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id)
 );

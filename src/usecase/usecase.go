@@ -11,3 +11,7 @@ type AuthUsecaseInterface interface {
 	Register(request dto.RequestCreateUser) error
 	Login(request dto.RequestAuth) (token string, err error)
 }
+
+type MatchUsecaseInterface interface {
+	CreateMatch(request dto.RequestCreateMatch) error
+}

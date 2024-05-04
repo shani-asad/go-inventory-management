@@ -52,17 +52,21 @@ func main() {
 	middleware := middleware.NewMiddleware(helper)
 	// REPOSITORY
 	userRepository := repository.NewUserRepository(db)
+	matchRepository := repository.NewMatchRepository(db)
 	catRepository := repository.NewCatRepository(db)
 
 	// USECASE
 	authUsecase := usecase.NewAuthUsecase(userRepository, helper)
+	matchUseCase := usecase.NewMatchUsecase(matchRepository, helper)
 	catUsecase := usecase.NewCatUsecase(catRepository)
+
 
 	// HANDLER
 	catHandler := handler.NewCatHandler(catUsecase)
 	authHandler := handler.NewAuthHandler(authUsecase)
+	matchHandler := handler.NewMatchHandler(matchUseCase)
 
-	//	ROUTE
+	// ROUTE
 	r.GET("/health", func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"message": "hello",
@@ -72,12 +76,15 @@ func main() {
 	r.POST("/v1/register", authHandler.Register)
 	r.POST("/v1/login", authHandler.Login)
 
-	authorized := r.Group("/api")
+	authorized := r.Group("")
 	authorized.Use(middleware.AuthMiddleware)
 
 	// CAT
 	authorized.POST("v1/cat", catHandler.AddCat)
 	authorized.GET("v1/cat", catHandler.GetCatById)
+
+	authorized.POST("/v1/cat/match", matchHandler.CreateMatch)
+	authorized.GET("/v1/cat/match", matchHandler.GetMatch)
 
 	r.Run()
 }

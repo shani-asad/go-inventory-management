@@ -3,11 +3,10 @@ package database
 import "time"
 
 type Match struct {
-	Id			int
-	IssuedBy	int // user ID
+	Id			int	
 	MatchCatId	int	// cat ID
 	UserCatId	int // cat ID
-	Message		int // not null, minLength: 5, maxLength: 120
+	Message		string // not null, minLength: 5, maxLength: 120
 	CreatedAt	time.Time
 	UpdatedAt	time.Time
 }

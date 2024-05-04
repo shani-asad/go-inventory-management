@@ -11,3 +11,7 @@ type AuthHandlerInterface interface {
 	Register(c *gin.Context)
 	Login(c *gin.Context)
 }
+
+type MatchHandlerInterface interface {
+	CreateMatch(c *gin.Context)	
+}

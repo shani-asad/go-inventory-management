@@ -25,7 +25,7 @@ func (h *Helpers) GenerateToken(userID int) (string, error) {
 
 	claims := jwt.MapClaims{
 		"sub": fmt.Sprintf("%v", userID),
-		"exp": time.Now().Add(time.Hour * 1).Unix(),
+		"exp": time.Now().Add(time.Hour * 8).Unix(),
 		"iat": time.Now().Unix(),
 	}
 

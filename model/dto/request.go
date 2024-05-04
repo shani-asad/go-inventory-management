@@ -11,6 +11,11 @@ type RequestCreateUser struct {
 	Name     string `json:"name"`
 }
 
+type RequestCreateMatch struct {
+	MatchCatId	int `json:"matchCatId"`
+	UserCatId	int `json:"userCatId"`
+	Message		string `json:"message"`
+}
 type RequestCreateCat struct {
 	Name 					string `json:"name"`
 	UserId 				int `json:"userId"`
