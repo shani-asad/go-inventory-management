@@ -13,6 +13,7 @@ type RequestCreateUser struct {
 
 type RequestCreateCat struct {
 	Name 					string `json:"name"`
+	UserId 				int `json:"userId"`
 	Race 					string `json:"race"`
 	Sex 					string `json:"sex"`
 	AgeInMonth 		int `json:"ageInMonth"`

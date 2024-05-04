@@ -35,7 +35,7 @@ func (h *CatHandler) AddCat(c *gin.Context) {
 		return
 	}
 
-	err := h.iCatUsecase.AddCat(request)
+	id, err := h.iCatUsecase.AddCat(request)
 	if err != nil {
 		c.JSON(500, gin.H{"status": "internal server error", "message": err})
     return
@@ -45,7 +45,7 @@ func (h *CatHandler) AddCat(c *gin.Context) {
 	response := gin.H{
 		"message": "success",
 		"data": gin.H{
-			"id":        "some-id", // use whatever id
+			"id":        id, // use whatever id
 			"createdAt": time.Now().Format(time.RFC3339), // in ISO 8601 format
 		},
 	}

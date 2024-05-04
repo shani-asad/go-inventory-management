@@ -20,6 +20,8 @@ CREATE TABLE cats (
     sex VARCHAR(10) NOT NULL CHECK (sex IN ('male', 'female')),
     age_in_month INT NOT NULL,
     description VARCHAR(20) NOT NULL,
-    image_urls JSONB NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES users(id)
+    image_urls TEXT[] NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

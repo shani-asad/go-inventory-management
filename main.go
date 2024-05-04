@@ -9,12 +9,14 @@ import (
 	"cats-social/src/middleware"
 	"cats-social/src/repository"
 	"cats-social/src/usecase"
+	"fmt"
+	"log"
 	"os"
 
-	"fmt"
-
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
+	"github.com/golang-migrate/migrate/v4"
+	_ "github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
 
 func main() {
@@ -31,6 +33,19 @@ func main() {
 	}
 
 	db := db.InitPostgreDB(postgreConfig)
+	// run migrations
+	m, err := migrate.New("file://app/db/migrations", os.Getenv("DATABASE_URL"))
+	if err != nil {
+		log.Fatal("Error creating migration instance:", err)
+	}
+
+	// Run the migration up to the latest version
+	if err := m.Up(); err != nil && err != migrate.ErrNoChange {
+		log.Fatal("Error applying migrations:", err)
+	}
+
+	fmt.Println("Migration successfully applied")
+
 	helper := helpers.NewHelper()
 
 	// MIDDLEWARE

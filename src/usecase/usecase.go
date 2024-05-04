@@ -4,7 +4,7 @@ import "cats-social/model/dto"
 
 type CatUsecaseInterface interface {
 	GetCatById(id int) interface{}
-	AddCat(request dto.RequestCreateCat) error
+	AddCat(request dto.RequestCreateCat) (id int64, err error)
 }
 
 type AuthUsecaseInterface interface {

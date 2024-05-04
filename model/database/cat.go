@@ -4,6 +4,7 @@ import "time"
 
 type Cat struct {
 	Id        	int
+	UserId 			int
 	Name      	string
 	Race		string
 	Sex			string
