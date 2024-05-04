@@ -17,6 +17,7 @@ type IssuedBy struct {
 
 type CatDetail struct {
 	Id int `json:"id"`
+	UserId int `json:"userId"`
 	Name string `json:"name"`
 	Race string `json:"race"`
 	Sex string `json:"sex"`
@@ -25,6 +26,7 @@ type CatDetail struct {
 	ImageUrls []string `json:"imageUrls"` // apa ini harusnya json string?
 	HasMatched bool `json:"hasMatched"`
 	CreatedAt string `json:"createdAt"`
+	UpdatedAt string `json:"updatedAt"`
 }
 type SingularResponseGetMatch struct {
 	Id int		`json:"id"`

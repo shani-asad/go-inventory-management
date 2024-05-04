@@ -25,3 +25,15 @@ type RequestCreateCat struct {
 	Description 	string `json:"description"`
 	ImageUrls 		[]string `json:"imageUrls"`
 }
+
+type RequestGetCat struct {
+	Id string `json:"id"`
+	Limit int `json:"limit"`
+	Offset int `json:"offset"`
+	Race string `json:"race"`
+	Sex string `json:"sex"`
+	HasMatched bool `json:"hasMatched"`
+	AgeInMonth string `json:"ageInMonth"`
+	Owned bool `json:"owned"`
+	Search string `json:"search"`
+}

@@ -10,6 +10,7 @@ type Cat struct {
 	Sex			string
 	AgeInMonth	int
 	Description	string // not null, minLength 1, maxLength 200
+	HasMatched bool
 	CreatedAt	time.Time
 	UpdatedAt	time.Time
 	ImageUrls	[]string // not null, minItems: 1, items: not null, should be url

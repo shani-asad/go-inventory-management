@@ -81,7 +81,9 @@ func main() {
 
 	// CAT
 	authorized.POST("v1/cat", catHandler.AddCat)
-	authorized.GET("v1/cat", catHandler.GetCatById)
+	authorized.GET("v1/cat", catHandler.GetCat)
+	authorized.PUT("v1/cat/:id", catHandler.UpdateCat)
+	authorized.DELETE("v1/cat/:id", catHandler.DeleteCat)
 
 	authorized.POST("/v1/cat/match", matchHandler.CreateMatch)
 	authorized.GET("/v1/cat/match", matchHandler.GetMatch)
