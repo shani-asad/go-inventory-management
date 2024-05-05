@@ -23,10 +23,19 @@ func NewCatRepository(db *sql.DB) CatRepositoryInterface {
 func (r *CatRepository) GetCatById(ctx context.Context ,id int) (err error) {
 	query := `SELECT id FROM cats WHERE id = $1`
 
-	_, err = r.db.QueryContext(ctx, query, id)
+	row, err := r.db.QueryContext(ctx, query, id)
 	fmt.Println(err)
+	if err != nil {
+		return err
+	}
+	defer row.Close()
 
-	return err
+	// Check if no rows were returned
+	if !row.Next() {
+			return fmt.Errorf("match with id %d not found", id)
+	}
+
+	return nil
 }
 
 func (r *CatRepository) CreateCat(ctx context.Context, data database.Cat) (int64, error) {
