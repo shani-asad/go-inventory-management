@@ -86,22 +86,22 @@ func main() {
 		})
 	})
 
-	r.POST("/v1/register", authHandler.Register)
-	r.POST("/v1/login", authHandler.Login)
+	r.POST("/v1/user/register", authHandler.Register)
+	r.POST("/v1/user/login", authHandler.Login)
 
 	authorized := r.Group("")
 	authorized.Use(middleware.AuthMiddleware)
 
 	// CAT
-	authorized.POST("v1/cat", catHandler.AddCat)
-	authorized.GET("v1/cat", catHandler.GetCat)
-	authorized.PUT("v1/cat/:id", catHandler.UpdateCat)
-	authorized.DELETE("v1/cat/:id", catHandler.DeleteCat)
+	authorized.POST("/v1/cat", catHandler.AddCat)
+	authorized.GET("/v1/cat", catHandler.GetCat)
+	authorized.PUT("/v1/cat/:id", catHandler.UpdateCat)
+	authorized.DELETE("/v1/cat/:id", catHandler.DeleteCat)
 
 	// MATCH
 	authorized.POST("/v1/cat/match", matchHandler.CreateMatch)
 	authorized.GET("/v1/cat/match", matchHandler.GetMatch)
-	authorized.DELETE("v1/cat/match/:id", matchHandler.DeleteMatch)
+	authorized.DELETE("/v1/cat/match/:id", matchHandler.DeleteMatch)
 	authorized.POST("/v1/cat/match/approve", matchHandler.ApproveMatch)
 	authorized.POST("/v1/cat/match/reject", matchHandler.RejectMatch)
 
