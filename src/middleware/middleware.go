@@ -26,7 +26,7 @@ func (m *Middleware) AuthMiddleware(c *gin.Context) {
 	authorizationHeader := c.GetHeader("Authorization")
 
 	if authorizationHeader == "" {
-		c.JSON(http.StatusUnauthorized, "authorization header is missing")
+		c.JSON(http.StatusUnauthorized, "request token is missing or expired")
 		c.Abort()
 		return
 	}

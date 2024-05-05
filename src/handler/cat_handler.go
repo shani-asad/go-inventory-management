@@ -219,10 +219,10 @@ func (h *CatHandler) UpdateCat(c *gin.Context) {
 	err = h.iCatUsecase.GetCatById(id)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			c.JSON(http.StatusNotFound, gin.H{"error": "cat not found"})
+			c.JSON(http.StatusNotFound, gin.H{"error": "id not found"})
 			return
 		}
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to check cat existence"})
+		c.JSON(http.StatusNotFound, gin.H{"error": "id not found"})
 		return
 	}
 
@@ -249,7 +249,7 @@ func (h *CatHandler) UpdateCat(c *gin.Context) {
         return
     }
 
-	c.JSON(http.StatusOK, gin.H{"message": "success"})
+	c.JSON(http.StatusOK, gin.H{"message": "Successfully add cat"})
 
 }
 
@@ -263,10 +263,10 @@ func (h *CatHandler) DeleteCat(c *gin.Context) {
 	err = h.iCatUsecase.GetCatById(id)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			c.JSON(http.StatusNotFound, gin.H{"error": "cat not found"})
+			c.JSON(http.StatusNotFound, gin.H{"error": "id not found"})
 			return
 		}
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to check cat existence"})
+		c.JSON(http.StatusNotFound, gin.H{"error": "id not found"})
 		return
 	}
 
@@ -276,5 +276,5 @@ func (h *CatHandler) DeleteCat(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "success"})
+	c.JSON(http.StatusOK, gin.H{"message": "Successfully delete cat"})
 }
