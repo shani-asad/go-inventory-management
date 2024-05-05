@@ -6,6 +6,8 @@ import (
 	"cats-social/model/dto"
 	"cats-social/src/repository"
 	"context"
+	"fmt"
+
 	// "errors"
 	// "fmt"
 	"time"
@@ -39,4 +41,19 @@ func (u *MatchUsecase) GetMatch(userId int) ([]dto.ResponseGetMatch, error) {
 
 	response, err := u.iMatchRepository.GetMatch(context.TODO(), userId)
 	return response, err
+}
+
+func (u *MatchUsecase) GetMatchById(id int) (error) {
+	err := u.iMatchRepository.GetMatchById(context.TODO(), id)
+	fmt.Println(err)
+
+  return err
+}
+
+
+func (u *MatchUsecase) DeleteMatch(id int) (error) {
+	err := u.iMatchRepository.DeleteMatch(context.TODO(), id)
+	fmt.Println(err)
+
+	return err
 }

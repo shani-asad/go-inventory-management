@@ -23,4 +23,6 @@ type UserRepositoryInterface interface {
 type MatchRepositoryInterface interface {
 	CreateMatch(ctx context.Context, data database.Match) (err error)
 	GetMatch(ctx context.Context, userId int) (response []dto.ResponseGetMatch, err error)
+	GetMatchById(ctx context.Context, id int) (err error)
+	DeleteMatch(ctx context.Context, id int) (err error)
 }

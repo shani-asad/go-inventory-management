@@ -40,6 +40,7 @@ func (r *MatchRepository) CreateMatch(ctx context.Context, data database.Match) 
 func (r *MatchRepository) GetMatch(ctx context.Context, userId int) (response []dto.ResponseGetMatch, err error) {
 	query := `
 	select 
+		m.id AS id,
 		m.message AS message,
 		m.created_at	AS matchCreatedAt,
 		userCat.id	AS userCatId,
@@ -84,6 +85,7 @@ func (r *MatchRepository) GetMatch(ctx context.Context, userId int) (response []
 	for rows.Next() {
 		var match dto.ResponseGetMatch
 		err := rows.Scan(
+			&match.Id,
 			&match.Message,
 			&match.CreatedAt,
 			&match.UserCatDetail.Id,
@@ -117,3 +119,32 @@ func (r *MatchRepository) GetMatch(ctx context.Context, userId int) (response []
 	return response, err
 }
 
+
+func (r *MatchRepository) GetMatchById(ctx context.Context ,id int) (err error) {
+    query := `SELECT id FROM matches WHERE id = $1`
+
+    rows, err := r.db.QueryContext(ctx, query, id)
+    if err != nil {
+        return err
+    }
+    defer rows.Close()
+
+    // Check if no rows were returned
+    if !rows.Next() {
+        return fmt.Errorf("match with id %d not found", id)
+    }
+
+    return nil
+}
+
+func (r *MatchRepository) DeleteMatch(ctx context.Context, id int) (error) {
+	query := `DELETE FROM matches WHERE id = $1`
+
+	_, err := r.db.ExecContext(ctx, query, id)
+
+	if err != nil {
+			return err
+	}
+
+	return nil
+}

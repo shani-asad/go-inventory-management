@@ -89,6 +89,7 @@ func main() {
 
 	authorized.POST("/v1/cat/match", matchHandler.CreateMatch)
 	authorized.GET("/v1/cat/match", matchHandler.GetMatch)
+	authorized.DELETE("v1/cat/match/:id", matchHandler.DeleteMatch)
 
 	r.Run()
 }
