@@ -35,17 +35,17 @@ func main() {
 
 	db := db.InitPostgreDB(postgreConfig)
 	// run migrations
-	m, err := migrate.New(os.Getenv("MIGRATION_PATH"), os.Getenv("DATABASE_URL"))
-	if err != nil {
-		log.Fatal("Error creating migration instance: ", err)
-	}
+	// m, err := migrate.New(os.Getenv("MIGRATION_PATH"), os.Getenv("DATABASE_URL"))
+	// if err != nil {
+	// 	log.Fatal("Error creating migration instance: ", err)
+	// }
 
 	// Run the migration up to the latest version
-	if err := m.Up(); err != nil && err != migrate.ErrNoChange {
-		log.Fatal("Error applying migrations:", err)
-	}
+	// if err := m.Up(); err != nil && err != migrate.ErrNoChange {
+	// 	log.Fatal("Error applying migrations:", err)
+	// }
 
-	fmt.Println("Migration successfully applied")
+	// fmt.Println("Migration successfully applied")
 
 	helper := helpers.NewHelper()
 
