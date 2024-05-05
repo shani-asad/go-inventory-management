@@ -14,6 +14,7 @@ type CatUsecaseInterface interface {
 type AuthUsecaseInterface interface {
 	Register(request dto.RequestCreateUser) error
 	Login(request dto.RequestAuth) (token string, err error)
+	GetUserByEmail(email string) (exists bool, err error)
 }
 
 type MatchUsecaseInterface interface {
