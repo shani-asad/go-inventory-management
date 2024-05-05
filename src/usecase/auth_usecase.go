@@ -68,3 +68,11 @@ func (u *AuthUsecase) verifyPassword(password, passwordHash string) bool {
 
 	return err == nil
 }
+
+func (u *AuthUsecase) GetUserByEmail(email string) (bool, error) {
+	_, err := u.iUserRepository.GetUserByEmail(context.TODO(), email)
+	if err != nil {
+    return false, err
+  }
+	return true, nil
+}
