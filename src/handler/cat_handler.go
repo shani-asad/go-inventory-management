@@ -4,9 +4,8 @@ import (
 	"cats-social/model/dto"
 	"cats-social/src/usecase"
 	"database/sql"
-	"fmt"
+	"log"
 	"net/http"
-	"reflect"
 	"strconv"
 	"time"
 
@@ -30,24 +29,27 @@ func (h *CatHandler) GetCatById(c *gin.Context) {
 func (h *CatHandler) AddCat(c *gin.Context) {
 	var request dto.RequestCreateCat
 	if err := c.ShouldBindJSON(&request); err != nil {
+		log.Println("add cat bad request ", err)
 		c.JSON(http.StatusBadRequest, gin.H{"status": "bad request", "message": err})
 		return
 	}
 
 	if !validateCat(&request) {
+		log.Println("add cat bad request")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "request doesn’t pass validation"})
 		return
 	}
 
 	userId, _ := c.Get("user_id")
-	fmt.Println("Type of userId.(int): ", reflect.TypeOf(userId))
 	request.UserId = userId.(int)
 	id, err := h.iCatUsecase.AddCat(request)
 	if err != nil {
+		log.Println("add cat internal server error:", err)
 		c.JSON(500, gin.H{"status": "internal server error", "message": err})
     return
 	}
 
+	log.Println("add cat success")
 	// Mocking the response
 	response := gin.H{
 		"message": "success",
@@ -148,10 +150,12 @@ func (h *CatHandler) GetCat(c *gin.Context) {
 	}
 	cats, err := h.iCatUsecase.GetCat(request)
 	if err != nil {
+		log.Println("get cat server error ", err)
 		c.JSON(500, gin.H{"status": "internal server error", "message": err})
 		return
 	}
 
+	log.Println("get cat successful")
 	c.JSON(http.StatusOK, gin.H{"message": "success", "data": cats})
 }
 
@@ -205,6 +209,7 @@ func validateCat(cat *dto.RequestCreateCat) bool {
 func (h *CatHandler) UpdateCat(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
+			log.Println("update cat bad request ", err)
 			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
 			return
 	}
@@ -212,12 +217,14 @@ func (h *CatHandler) UpdateCat(c *gin.Context) {
 	// Parse request body
 	var cat dto.RequestCreateCat
 	if err := c.ShouldBindJSON(&cat); err != nil {
+		log.Println("update cat bad request ", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	err = h.iCatUsecase.GetCatById(id)
 	if err != nil {
+		log.Println("update cat not found ", err)
 		if err == sql.ErrNoRows {
 			c.JSON(http.StatusNotFound, gin.H{"error": "id not found"})
 			return
@@ -229,10 +236,12 @@ func (h *CatHandler) UpdateCat(c *gin.Context) {
 	// Check if the cat has already been requested to match
 	hasMatched, err := h.iCatUsecase.CheckHasMatch(id)
 	if err != nil {
+		log.Println("update cat internal error ", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to check cat match status"})
 		return
 	}
 	if hasMatched {
+		log.Println("update cat bad request ", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "cat is already requested to match"})
 		return
 	}
@@ -245,10 +254,12 @@ func (h *CatHandler) UpdateCat(c *gin.Context) {
 
 	err = h.iCatUsecase.UpdateCat(cat, int64(id))
     if err != nil {
+				log.Println("update cat internal error ", err)
         c.JSON(500, gin.H{"status": "internal server error", "message": err})
         return
     }
 
+	log.Println("update cat success")
 	c.JSON(http.StatusOK, gin.H{"message": "Successfully add cat"})
 
 }
@@ -256,12 +267,14 @@ func (h *CatHandler) UpdateCat(c *gin.Context) {
 func (h *CatHandler) DeleteCat(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
+		  log.Println("delete cat bad request ", err)
 			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
 			return
 	}
 
 	err = h.iCatUsecase.GetCatById(id)
 	if err != nil {
+		log.Println("delete cat not found ", err)
 		if err == sql.ErrNoRows {
 			c.JSON(http.StatusNotFound, gin.H{"error": "id not found"})
 			return
@@ -272,9 +285,11 @@ func (h *CatHandler) DeleteCat(c *gin.Context) {
 
 	err = h.iCatUsecase.DeleteCat(id)
 	if err != nil {
+		log.Println("delete cat internal error ", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to delete cat from the database"})
 		return
 	}
 
+	log.Println("delete cat success")
 	c.JSON(http.StatusOK, gin.H{"message": "Successfully delete cat"})
 }

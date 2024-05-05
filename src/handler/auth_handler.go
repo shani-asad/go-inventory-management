@@ -4,6 +4,7 @@ import (
 	"cats-social/model/dto"
 	"cats-social/src/usecase"
 	"errors"
+	"log"
 	"regexp"
 
 	"github.com/gin-gonic/gin"
@@ -21,6 +22,7 @@ func (h *AuthHandler) Register(c *gin.Context) {
 	var request dto.RequestCreateUser
 	err := c.ShouldBindJSON(&request)
 	if err != nil {
+		log.Println("Register bad request")
 		c.JSON(400, gin.H{"status": "bad request", "message": err})
 		return
 	}
@@ -28,6 +30,7 @@ func (h *AuthHandler) Register(c *gin.Context) {
 	// Validate request payload
 	err = ValidateRegisterRequest(request.Email, request.Name, request.Password)
 	if err != nil {
+		log.Println("Register bad request ", err)
 		c.JSON(400, gin.H{"status": "bad request", "message": err.Error()})
 		return
 	}
@@ -35,16 +38,19 @@ func (h *AuthHandler) Register(c *gin.Context) {
 	// Check if email already exists
 	exists, _ := h.iAuthUsecase.GetUserByEmail(request.Email)
 	if exists {
+		log.Println("Register bad request ", err)
 		c.JSON(409, gin.H{"status": "bad request", "message": "email already exists"})
 		return
 	}
 
 	err = h.iAuthUsecase.Register(request)
 	if err != nil {
+		log.Println("Register bad request ", err)
 		c.JSON(500, gin.H{"status": "internal server error", "message": err})
 		return
 	}
 
+	log.Println("Register successful")
 	c.JSON(200, gin.H{
 		"message": "user register success",
 	})
@@ -54,22 +60,26 @@ func (h *AuthHandler) Login(c *gin.Context) {
 	var request dto.RequestAuth
 	err := c.ShouldBindJSON(&request)
 	if err != nil {
+		log.Println("Login bad request ", err)
 		c.JSON(400, gin.H{"status": "bad request", "message": err})
 		return
 	}
 
 	err = ValidateLoginRequest(request.Email, request.Password)
 	if err != nil {
+		log.Println("Login bad request ", err)
 		c.JSON(400, gin.H{"status": "bad request", "message": err.Error()})
 		return
 	}
 
 	token, err := h.iAuthUsecase.Login(request)
 	if err != nil {
+		log.Println("Login bad request ", err)
 		c.JSON(500, gin.H{"status": "internal server error", "message": err})
 		return
 	}
 
+	log.Println("Login successful")
 	c.JSON(200, gin.H{
 		"token": token,
 	})
