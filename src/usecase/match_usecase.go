@@ -35,7 +35,7 @@ func (u *MatchUsecase) CreateMatch(request dto.RequestCreateMatch) error {
 	return err
 }
 
-func (u *MatchUsecase) GetMatch(userId string) error {
+func (u *MatchUsecase) GetMatch(userId int) ([]dto.ResponseGetMatch, error) {
 
 	response, err := u.iMatchRepository.GetMatch(context.TODO(), userId)
 	return response, err

@@ -2,9 +2,10 @@ package repository
 
 import (
 	"cats-social/model/database"
+	"cats-social/model/dto"
 	"context"
 	"database/sql"
-	"cats-social/model/dto"
+	"fmt"
 )
 
 type MatchRepository struct {
@@ -34,18 +35,10 @@ func (r *MatchRepository) CreateMatch(ctx context.Context, data database.Match) 
 	return err
 }
 
-func (r *UserRepository) GetUserByEmail(ctx context.Context, email string) (response database.User, err error) {
-	err = r.db.QueryRowContext(ctx, "SELECT id, name, email, password FROM users WHERE email = $1", email).Scan(&response.Id, &response.Name, &response.Email, &response.Password)
-	if err != nil {
-		return
-	}
-	return
-}
-
-func (r *MatchRepository) GetMatch(ctx context.Context, userId string) (response dto.ResponseGetMatch, err error) {
+func (r *MatchRepository) GetMatch(ctx context.Context, userId int) (response []dto.ResponseGetMatch, err error) {
 	query := `
 	select 
-		m.message,
+		m.message AS message,
 		m.created_at	AS matchCreatedAt,
 		userCat.id	AS userCatId,
 		userCat.name	AS userCatName,
@@ -65,7 +58,7 @@ func (r *MatchRepository) GetMatch(ctx context.Context, userId string) (response
 		matchCat.created_at	AS matchCatCreatedAt,
 		u.name	AS userName,
 		u.email	AS userEmail,
-		u.created_at ASuserCreatedAt
+		u.created_at AS userCreatedAt
 	from matches m
 	join cats userCat
 		on m.user_cat_id = userCat.id
@@ -76,15 +69,49 @@ func (r *MatchRepository) GetMatch(ctx context.Context, userId string) (response
 	where u.id = $1
 	`
 
-	/**
-	INI CARA NYIMPAN KE ARRAY GIMANA CUY
-	*/
-	// _, err = r.db.QueryRowContext(
-	// 	ctx,
-	// 	query,
-	// 	userId,
-	// ).Scan()
+	rows, err := r.db.QueryContext(
+		ctx,
+		query,
+		userId,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
 
-	return 
+	for rows.Next() {
+		var match dto.ResponseGetMatch
+		err := rows.Scan(
+			&match.Message,
+			&match.CreatedAt,
+			&match.UserCatDetail.Id,
+			&match.UserCatDetail.Name,
+			&match.UserCatDetail.Race,
+			&match.UserCatDetail.Sex,
+			&match.UserCatDetail.Description,
+			&match.UserCatDetail.AgeInMonth,
+			&match.UserCatDetail.ImageUrls,
+			&match.UserCatDetail.CreatedAt,
+			&match.MatchCatDetail.Id,
+			&match.MatchCatDetail.Name,
+			&match.MatchCatDetail.Race,
+			&match.MatchCatDetail.Sex,
+			&match.MatchCatDetail.Description,
+			&match.MatchCatDetail.AgeInMonth,
+			&match.MatchCatDetail.ImageUrls,
+			&match.MatchCatDetail.CreatedAt,
+			&match.IssuedBy.Name,
+			&match.IssuedBy.Email,
+			&match.IssuedBy.CreatedAt,
+		)
+
+		if err != nil {
+			fmt.Println("XXXXXXXXXXXXXXXXXXXX",err)
+			return nil, err
+		}
+		response = append(response, match)
+	}
+
+	return response, err
 }
 

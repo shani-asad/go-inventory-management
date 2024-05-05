@@ -23,20 +23,16 @@ type CatDetail struct {
 	Sex string `json:"sex"`
 	Description string `json:"description"`
 	AgeInMonth int `json:"ageInMonth"`
-	ImageUrls []string `json:"imageUrls"` // apa ini harusnya json string?
+	ImageUrls []string `json:"imageUrls"` 
 	HasMatched bool `json:"hasMatched"`
 	CreatedAt string `json:"createdAt"`
 	UpdatedAt string `json:"updatedAt"`
 }
-type SingularResponseGetMatch struct {
+type ResponseGetMatch struct {
 	Id int		`json:"id"`
 	IssuedBy IssuedBy `json:"issuedBy"`
 	Message	string	`json:"message"`
 	CreatedAt	string	`json:"createdAt"`
 	MatchCatDetail CatDetail `json:"matchCatDetail"`
 	UserCatDetail CatDetail `json:"userhCatDetail"`
-}
-
-type ResponseGetMatch struct {
-	Data []SingularResponseGetMatch `json:"data"`
 }

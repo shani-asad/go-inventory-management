@@ -4,7 +4,9 @@ import (
 	"cats-social/model/dto"
 	"cats-social/src/usecase"
 	"database/sql"
+	"fmt"
 	"net/http"
+	"reflect"
 	"strconv"
 	"time"
 
@@ -37,6 +39,9 @@ func (h *CatHandler) AddCat(c *gin.Context) {
 		return
 	}
 
+	userId, _ := c.Get("user_id")
+	fmt.Println("Type of userId.(int): ", reflect.TypeOf(userId))
+	request.UserId = userId.(int)
 	id, err := h.iCatUsecase.AddCat(request)
 	if err != nil {
 		c.JSON(500, gin.H{"status": "internal server error", "message": err})

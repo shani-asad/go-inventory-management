@@ -42,7 +42,8 @@ func (h *MatchHandler) GetMatch(c *gin.Context) {
 	//TODO - validate request
 	//userId, _ := c.Get("user_id") ---> validate 
 
-	response, err = h.iMatchUsecase.GetMatch(userId)
+	userId, _  := c.Get("user_id")
+	response, err := h.iMatchUsecase.GetMatch(userId.(int))
 	if err != nil {
 		c.JSON(500, gin.H{"status": "internal server error", "message": err})
 		return

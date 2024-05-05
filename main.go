@@ -17,6 +17,7 @@ import (
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
+	"github.com/joho/godotenv"
 )
 
 func main() {
@@ -34,10 +35,11 @@ func main() {
 
 	db := db.InitPostgreDB(postgreConfig)
 	// run migrations
-	m, err := migrate.New("file://app/db/migrations", os.Getenv("DATABASE_URL"))
+	m, err := migrate.New(os.Getenv("MIGRATION_PATH"), os.Getenv("DATABASE_URL"))
 	if err != nil {
-		log.Fatal("Error creating migration instance:", err)
+		log.Fatal("Error creating migration instance: ", err)
 	}
+
 
 	// Run the migration up to the latest version
 	if err := m.Up(); err != nil && err != migrate.ErrNoChange {

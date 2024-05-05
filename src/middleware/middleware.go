@@ -2,7 +2,9 @@ package middleware
 
 import (
 	"cats-social/helpers"
+	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -44,6 +46,12 @@ func (m *Middleware) AuthMiddleware(c *gin.Context) {
 		return
 	}
 
-	c.Set("user_id", claims.Subject)
+	num, err := strconv.Atoi(claims.Subject)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
+
+	c.Set("user_id", num)
 	c.Next()
 }

@@ -67,24 +67,7 @@ func (r *CatRepository) GetCat(ctx context.Context, data dto.RequestGetCat) ([]d
 			query += " AND id = $" + strconv.Itoa(len(args)+1)
 			args = append(args, data.Id)
 	}
-	if data.Race != "" {
-		validRaces := map[string]bool{
-			"Persian":          true,
-			"Maine Coon":       true,
-			"Siamese":          true,
-			"Ragdoll":          true,
-			"Bengal":           true,
-			"Sphynx":           true,
-			"British Shorthair": true,
-			"Abyssinian":       true,
-			"Scottish Fold":    true,
-			"Birman":           true,
-		}
-			if validRaces[data.Race] {
-				query += " AND race = $" + strconv.Itoa(len(args)+1)
-				args = append(args, data.Race)
-			}
-	}
+	 
 	if data.Sex != "" {
 		if data.Sex == "male" || data.Sex == "female" {
 			query += " AND sex = $" + strconv.Itoa(len(args)+1)

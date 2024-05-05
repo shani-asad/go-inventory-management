@@ -17,4 +17,5 @@ type AuthHandlerInterface interface {
 
 type MatchHandlerInterface interface {
 	CreateMatch(c *gin.Context)	
+	GetMatch(c *gin.Context)	
 }
