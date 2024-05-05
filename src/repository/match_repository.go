@@ -18,8 +18,68 @@ func NewMatchRepository(db *sql.DB) MatchRepositoryInterface {
 	return &MatchRepository{db}
 }
 
-func (r *MatchRepository) CreateMatch(ctx context.Context, data database.Match) (err error) {
-	query := `
+func (r *MatchRepository) CreateMatch(ctx context.Context, data database.Match, reqUserId int) (err error) {
+
+	//TODO - validate request
+	// cats id not found
+	query := `SELECT id, user_id FROM cats WHERE id = $1`
+
+    rows, err := r.db.QueryContext(ctx, query, data.MatchCatId)
+    if err != nil {
+        return err
+    }
+    defer rows.Close()
+
+    if !rows.Next() {
+        return fmt.Errorf("cat with id %d not found", data.MatchCatId)
+    }
+
+    rows, err = r.db.QueryContext(ctx, query, data.UserCatId)
+    if err != nil {
+        return err
+    }
+    defer rows.Close()
+
+    if !rows.Next() {
+        return fmt.Errorf("cat with id %d not found", data.UserCatId)
+    }
+
+	// userCatId does not belong to user
+	var userId int
+	err = r.db.QueryRowContext(ctx, "SELECT user_id FROM cats WHERE id=?", data.UserCatId).Scan(&userId)
+
+	if(userId != reqUserId){
+		return fmt.Errorf("cat with id %d does not belong to user with id %d", data.UserCatId, userId)
+	}
+
+	// cats gender are same
+	query = "SELECT sex FROM cats WHERE id=?"
+	var userCatSex, matchCatSex string
+	err = r.db.QueryRowContext(ctx, query, data.UserCatId).Scan(&userCatSex)
+	err = r.db.QueryRowContext(ctx, query, data.MatchCatId).Scan(&matchCatSex)
+	if(userCatSex == matchCatSex){
+		return fmt.Errorf("cats' sex cannot be the same")
+	}
+
+	// either cat already matched
+	query = "SELECT has_matched FROM cats WHERE id=?"
+	var userCatHasMatched, matchCatHasMatched bool
+	err = r.db.QueryRowContext(ctx, query, data.UserCatId).Scan(&userCatHasMatched)
+	err = r.db.QueryRowContext(ctx, query, data.MatchCatId).Scan(&matchCatHasMatched)
+	if(userCatHasMatched || matchCatHasMatched){
+		return fmt.Errorf("one of the cats has matched")
+	}
+
+	// both cat from same owner
+	query = "SELECT user_id FROM cats WHERE id=?"
+	var userCatOwner, matchCatOwner bool
+	err = r.db.QueryRowContext(ctx, query, data.UserCatId).Scan(&userCatOwner)
+	err = r.db.QueryRowContext(ctx, query, data.MatchCatId).Scan(&matchCatOwner)
+	if(userCatOwner == matchCatOwner){
+		return fmt.Errorf("cats cannot be from same owner")
+	}
+
+	query = `
 	INSERT INTO matches (match_cat_id, user_cat_id, message, created_at, updated_at)
 	VALUES ($1, $2, $3, $4, $5)
 	RETURNING id`
@@ -139,7 +199,7 @@ func (r *MatchRepository) GetMatchById(ctx context.Context ,id int) (err error) 
 
 
 func (r *MatchRepository) GetCatIdByMatchId(ctx context.Context, id int) (matchCatID int, userCatID int, err error) {
-    query := `SELECT match_cat_id, user_cat_id FROM matches WHERE id = $1`
+    query := `SELECT match_cat_id, user_cat_id FROM matches WHERE id = $1 AND has_matched = false`
 
     rows, err := r.db.QueryContext(ctx, query, id)
     if err != nil {

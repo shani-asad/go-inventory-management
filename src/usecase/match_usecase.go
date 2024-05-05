@@ -23,7 +23,7 @@ func NewMatchUsecase(
 	return &MatchUsecase{iMatchRepository}
 }
 
-func (u *MatchUsecase) CreateMatch(request dto.RequestCreateMatch) error {
+func (u *MatchUsecase) CreateMatch(request dto.RequestCreateMatch, reqUserId int) error {
 
 	data := database.Match{
 		MatchCatId:	request.MatchCatId,
@@ -33,7 +33,7 @@ func (u *MatchUsecase) CreateMatch(request dto.RequestCreateMatch) error {
 		UpdatedAt: time.Now(),
 	}
 
-	err := u.iMatchRepository.CreateMatch(context.TODO(), data)
+	err := u.iMatchRepository.CreateMatch(context.TODO(), data, reqUserId)
 	return err
 }
 

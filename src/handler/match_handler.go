@@ -27,10 +27,8 @@ func (h *MatchHandler) CreateMatch(c *gin.Context) {
 		return
 	}
 
-	//TODO - validate request
-	//userId, _ := c.Get("user_id")
-
-	err = h.iMatchUsecase.CreateMatch(request)
+	reqUserId,_ := c.Get("user_id")
+	err = h.iMatchUsecase.CreateMatch(request, reqUserId.(int))
 	if err != nil {
 		c.JSON(500, gin.H{"status": "internal server error", "message": err})
 		return
@@ -42,9 +40,6 @@ func (h *MatchHandler) CreateMatch(c *gin.Context) {
 }
 
 func (h *MatchHandler) GetMatch(c *gin.Context) {
-
-	//TODO - validate request
-	//userId, _ := c.Get("user_id") ---> validate 
 
 	userId, _  := c.Get("user_id")
 	response, err := h.iMatchUsecase.GetMatch(userId.(int))
@@ -86,6 +81,9 @@ func (h *MatchHandler) DeleteMatch(c *gin.Context) {
 }
 
 func (h *MatchHandler) ApproveMatch(c *gin.Context) {
+	// TODO - add validations
+	// matchCatId no longer valid
+	
 	var request dto.RequestApproveMatch
 	err := c.ShouldBindJSON(&request)
 	if err != nil {
@@ -106,6 +104,12 @@ func (h *MatchHandler) ApproveMatch(c *gin.Context) {
 	}
 
 	matchCatId, userCatId, err := h.iMatchUsecase.GetCatIdByMatchId(request.MatchId)
+
+	if err != nil {
+		fmt.Println(err)
+		c.JSON(404, gin.H{"status": "not found", "message": "invalid cat id"})
+		return
+	}
 
 	err = h.iMatchUsecase.ApproveMatch(request.MatchId, matchCatId, userCatId)
 
