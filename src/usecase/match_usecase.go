@@ -66,13 +66,13 @@ func (u *MatchUsecase) GetCatIdByMatchId(id int) (int, int, error) {
 }
 
 func (u *MatchUsecase) ApproveMatch(id int, matchCatId int, userCatId int) error {
-
-
-	// update matchCat
-	// update userCat
-	// delete matches
-
 	err := u.iMatchRepository.ApproveMatch(context.TODO(), id, matchCatId, userCatId)
+
+	return err
+}
+
+func (u *MatchUsecase) RejectMatch(id int) error {
+	err := u.iMatchRepository.RejectMatch(context.TODO(), id)
 
 	return err
 }

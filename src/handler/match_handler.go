@@ -119,3 +119,36 @@ func (h *MatchHandler) ApproveMatch(c *gin.Context) {
 		"message": "successfully approve match request",
 	})
 }
+
+func (h *MatchHandler) RejectMatch(c *gin.Context) {
+	var request dto.RequestApproveMatch
+	err := c.ShouldBindJSON(&request)
+	if err != nil {
+		fmt.Println(err)
+		c.JSON(400, gin.H{"status": "bad request", "message": err})
+		return
+	}
+
+	err = h.iMatchUsecase.GetMatchById(request.MatchId)
+	if err != nil {
+		fmt.Println(err)
+		if err == sql.ErrNoRows {
+			c.JSON(http.StatusNotFound, gin.H{"error": "match not found"})
+			return
+		}
+		c.JSON(http.StatusNotFound, gin.H{"error": "failed to check match existence"})
+		return
+	}
+
+	err = h.iMatchUsecase.RejectMatch(request.MatchId)
+
+	if err != nil {
+		fmt.Println(err)
+		c.JSON(500, gin.H{"status": "internal server error", "message": err})
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"message": "successfully reject match request",
+	})
+}

@@ -20,4 +20,5 @@ type MatchHandlerInterface interface {
 	GetMatch(c *gin.Context)	
 	DeleteMatch(c *gin.Context)
 	ApproveMatch(c *gin.Context)
+	RejectMatch(c *gin.Context)
 }

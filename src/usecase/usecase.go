@@ -22,5 +22,6 @@ type MatchUsecaseInterface interface {
 	GetMatchById(id int) (err error)
 	DeleteMatch(id int) (err error)
 	ApproveMatch(id int, matchCatId int, userCatId int) (err error)
+	RejectMatch(id int) (err error)
 	GetCatIdByMatchId(id int) (matchCatId int, userCatIs int, err error)
 }

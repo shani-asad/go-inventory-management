@@ -90,6 +90,7 @@ func main() {
 	authorized.GET("/v1/cat/match", matchHandler.GetMatch)
 	authorized.DELETE("v1/cat/match/:id", matchHandler.DeleteMatch)
 	authorized.POST("/v1/cat/match/approve", matchHandler.ApproveMatch)
+	authorized.POST("/v1/cat/match/reject", matchHandler.RejectMatch)
 
 	r.Run()
 }
