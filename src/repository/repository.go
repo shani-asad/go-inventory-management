@@ -26,5 +26,6 @@ type MatchRepositoryInterface interface {
 	GetMatchById(ctx context.Context, id int) (err error)
 	DeleteMatch(ctx context.Context, id int) (err error)
 	ApproveMatch(ctx context.Context, id int, matchCatId int, userCatId int) (error)
+	RejectMatch(ctx context.Context, id int) (error)
 	GetCatIdByMatchId(ctx context.Context, id int) (matchCatId int, userCatIs int, err error)
 }

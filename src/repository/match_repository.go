@@ -176,13 +176,11 @@ func (r *MatchRepository) ApproveMatch(ctx context.Context, id int, matchCatId i
 	query := "UPDATE cats SET has_matched = true where id = $1 "
 	_, err := r.db.ExecContext(ctx, query, matchCatId)
 	if err != nil {
-		fmt.Println("Error iniiiiiii 111111111")
 		return err
 	}
 	
 	_, err = r.db.ExecContext(ctx, query, userCatId)
 	if err != nil {
-		fmt.Println("Error iniiiiiii 2222222")
 		return err
 	}
 
@@ -193,12 +191,24 @@ func (r *MatchRepository) ApproveMatch(ctx context.Context, id int, matchCatId i
 	`
 	_, err = r.db.ExecContext(ctx, query, id, matchCatId, userCatId)
 	if err != nil {
-		fmt.Println("Error iniiiiiii 33333")
 		return err
 	}
 
 	if err != nil {
 			return err
+	}
+
+	return nil
+}
+
+func (r *MatchRepository) RejectMatch(ctx context.Context, id int) (error) {
+	query := `
+		DELETE FROM matches
+		WHERE id = $1;
+	`
+	_, err := r.db.ExecContext(ctx, query, id)
+	if err != nil {
+		return err
 	}
 
 	return nil
