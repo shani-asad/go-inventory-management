@@ -21,7 +21,7 @@ type Claims struct {
 }
 
 func (h *Helpers) GenerateToken(userID int) (string, error) {
-	key := []byte(os.Getenv("JWT_SECRET_KEY"))
+	key := []byte(os.Getenv("JWT_SECRET"))
 
 	claims := jwt.MapClaims{
 		"sub": fmt.Sprintf("%v", userID),
@@ -35,7 +35,7 @@ func (h *Helpers) GenerateToken(userID int) (string, error) {
 
 // ValidateJWT validates the JWT token
 func (h *Helpers) ValidateJWT(tokenString string) (*Claims, error) {
-	key := []byte(os.Getenv("JWT_SECRET_KEY"))
+	key := []byte(os.Getenv("JWT_SECRET"))
 
 	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (interface{}, error) {
 		// Check signing method
