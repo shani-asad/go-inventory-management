@@ -4,9 +4,11 @@ import (
 	"cats-social/model/dto"
 	"cats-social/src/usecase"
 	"database/sql"
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -24,15 +26,20 @@ func (h *MatchHandler) CreateMatch(c *gin.Context) {
 	err := c.ShouldBindJSON(&request)
 	if err != nil {
 		log.Println("create match bad request ", err)
-		c.JSON(400, gin.H{"status": "bad request", "message": err})
+		c.JSON(400, gin.H{"status": "bad request", "message": err.Error()})
 		return
 	}
 
 	reqUserId,_ := c.Get("user_id")
 	err = h.iMatchUsecase.CreateMatch(request, reqUserId.(int))
 	if err != nil {
+		if(strings.Contains(err.Error(), "not found")){
+			log.Println("create match internal error ", err)
+			c.JSON(404, gin.H{"status": "error", "message": err.Error()})
+			return
+		}
 		log.Println("create match internal error ", err)
-		c.JSON(500, gin.H{"status": "internal server error", "message": err})
+		c.JSON(400, gin.H{"status": "error", "message": err.Error()})
 		return
 	}
 
@@ -48,7 +55,7 @@ func (h *MatchHandler) GetMatch(c *gin.Context) {
 	response, err := h.iMatchUsecase.GetMatch(userId.(int))
 	if err != nil {
 		log.Println("get match internal error ", err)
-		c.JSON(500, gin.H{"status": "internal server error", "message": err})
+		c.JSON(500, gin.H{"status": "internal server error", "message": err.Error()})
 		return
 	}
 
@@ -80,7 +87,7 @@ func (h *MatchHandler) DeleteMatch(c *gin.Context) {
 	err = h.iMatchUsecase.DeleteMatch(id)
 	if err != nil {
 		log.Println("delete match internal error ", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to delete match from the database"})
+		c.JSON(http.StatusInternalServerError, gin.H{"	": "failed to delete match from the database"})
 		return
 	}
 
@@ -96,7 +103,7 @@ func (h *MatchHandler) ApproveMatch(c *gin.Context) {
 	err := c.ShouldBindJSON(&request)
 	if err != nil {
 		log.Println("approve match bad request ", err)
-		c.JSON(400, gin.H{"status": "bad request", "message": err})
+		c.JSON(400, gin.H{"status": "bad request", "message": err.Error()})
 		return
 	}
 
@@ -123,7 +130,7 @@ func (h *MatchHandler) ApproveMatch(c *gin.Context) {
 
 	if err != nil {
 		log.Println("approve match internal error ", err)
-		c.JSON(500, gin.H{"status": "internal server error", "message": err})
+		c.JSON(500, gin.H{"status": "internal server error", "message": err.Error()})
 		return
 	}
 
@@ -138,7 +145,7 @@ func (h *MatchHandler) RejectMatch(c *gin.Context) {
 	err := c.ShouldBindJSON(&request)
 	if err != nil {
 		log.Println("reject match bad request ", err)
-		c.JSON(400, gin.H{"status": "bad request", "message": err})
+		c.JSON(400, gin.H{"status": "bad request", "message": err.Error()})
 		return
 	}
 
@@ -157,7 +164,7 @@ func (h *MatchHandler) RejectMatch(c *gin.Context) {
 
 	if err != nil {
 		log.Println("approve match internal error ", err)
-		c.JSON(500, gin.H{"status": "internal server error", "message": err})
+		c.JSON(500, gin.H{"status": "internal server error", "message": err.Error()})
 		return
 	}
 

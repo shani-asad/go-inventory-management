@@ -46,14 +46,23 @@ func (r *MatchRepository) CreateMatch(ctx context.Context, data database.Match, 
 
 	// userCatId does not belong to user
 	var userId int
-	err = r.db.QueryRowContext(ctx, "SELECT user_id FROM cats WHERE id=?", data.UserCatId).Scan(&userId)
+	err = r.db.QueryRowContext(ctx, "SELECT user_id FROM cats WHERE id=$1", data.UserCatId).Scan(&userId)
 
 	if(userId != reqUserId){
-		return fmt.Errorf("cat with id %d does not belong to user with id %d", data.UserCatId, userId)
+		return fmt.Errorf("cat with id %d does not belong to user with id %d", data.UserCatId, reqUserId)
+	}
+
+	// both cat from same owner
+	query = "SELECT user_id FROM cats WHERE id=$1"
+	var userCatOwner, matchCatOwner bool
+	err = r.db.QueryRowContext(ctx, query, data.UserCatId).Scan(&userCatOwner)
+	err = r.db.QueryRowContext(ctx, query, data.MatchCatId).Scan(&matchCatOwner)
+	if(userCatOwner == matchCatOwner){
+		return fmt.Errorf("cats cannot be from same owner")
 	}
 
 	// cats gender are same
-	query = "SELECT sex FROM cats WHERE id=?"
+	query = "SELECT sex FROM cats WHERE id=$1"
 	var userCatSex, matchCatSex string
 	err = r.db.QueryRowContext(ctx, query, data.UserCatId).Scan(&userCatSex)
 	err = r.db.QueryRowContext(ctx, query, data.MatchCatId).Scan(&matchCatSex)
@@ -62,7 +71,7 @@ func (r *MatchRepository) CreateMatch(ctx context.Context, data database.Match, 
 	}
 
 	// either cat already matched
-	query = "SELECT has_matched FROM cats WHERE id=?"
+	query = "SELECT has_matched FROM cats WHERE id=$1"
 	var userCatHasMatched, matchCatHasMatched bool
 	err = r.db.QueryRowContext(ctx, query, data.UserCatId).Scan(&userCatHasMatched)
 	err = r.db.QueryRowContext(ctx, query, data.MatchCatId).Scan(&matchCatHasMatched)
@@ -70,14 +79,7 @@ func (r *MatchRepository) CreateMatch(ctx context.Context, data database.Match, 
 		return fmt.Errorf("one of the cats has matched")
 	}
 
-	// both cat from same owner
-	query = "SELECT user_id FROM cats WHERE id=?"
-	var userCatOwner, matchCatOwner bool
-	err = r.db.QueryRowContext(ctx, query, data.UserCatId).Scan(&userCatOwner)
-	err = r.db.QueryRowContext(ctx, query, data.MatchCatId).Scan(&matchCatOwner)
-	if(userCatOwner == matchCatOwner){
-		return fmt.Errorf("cats cannot be from same owner")
-	}
+	
 
 	query = `
 	INSERT INTO matches (match_cat_id, user_cat_id, message, created_at, updated_at)
