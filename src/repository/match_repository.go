@@ -6,6 +6,8 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+
+	"github.com/lib/pq"
 )
 
 type MatchRepository struct {
@@ -90,7 +92,7 @@ func (r *MatchRepository) GetMatch(ctx context.Context, userId int) (response []
 			&match.UserCatDetail.Sex,
 			&match.UserCatDetail.Description,
 			&match.UserCatDetail.AgeInMonth,
-			&match.UserCatDetail.ImageUrls,
+			pq.Array(&match.UserCatDetail.ImageUrls),
 			&match.UserCatDetail.CreatedAt,
 			&match.MatchCatDetail.Id,
 			&match.MatchCatDetail.Name,
@@ -98,7 +100,7 @@ func (r *MatchRepository) GetMatch(ctx context.Context, userId int) (response []
 			&match.MatchCatDetail.Sex,
 			&match.MatchCatDetail.Description,
 			&match.MatchCatDetail.AgeInMonth,
-			&match.MatchCatDetail.ImageUrls,
+			pq.Array(&match.MatchCatDetail.ImageUrls),
 			&match.MatchCatDetail.CreatedAt,
 			&match.IssuedBy.Name,
 			&match.IssuedBy.Email,
