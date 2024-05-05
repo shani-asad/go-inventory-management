@@ -23,11 +23,11 @@ import (
 func main() {
 	r := server.InitServer()
 
-	err := 	godotenv.Load()
-    if err != nil {
-        fmt.Println("Error loading .env file:", err)
-        return
-    }
+	err := godotenv.Load()
+	if err != nil {
+		fmt.Println("Error loading .env file:", err)
+		return
+	}
 
 	postgreConfig := properties.PostgreConfig{
 		DatabaseURL: os.Getenv("DATABASE_URL"),
@@ -39,7 +39,6 @@ func main() {
 	if err != nil {
 		log.Fatal("Error creating migration instance: ", err)
 	}
-
 
 	// Run the migration up to the latest version
 	if err := m.Up(); err != nil && err != migrate.ErrNoChange {
@@ -61,7 +60,6 @@ func main() {
 	authUsecase := usecase.NewAuthUsecase(userRepository, helper)
 	matchUseCase := usecase.NewMatchUsecase(matchRepository, helper)
 	catUsecase := usecase.NewCatUsecase(catRepository)
-
 
 	// HANDLER
 	catHandler := handler.NewCatHandler(catUsecase)
@@ -87,9 +85,11 @@ func main() {
 	authorized.PUT("v1/cat/:id", catHandler.UpdateCat)
 	authorized.DELETE("v1/cat/:id", catHandler.DeleteCat)
 
+	// MATCH
 	authorized.POST("/v1/cat/match", matchHandler.CreateMatch)
 	authorized.GET("/v1/cat/match", matchHandler.GetMatch)
 	authorized.DELETE("v1/cat/match/:id", matchHandler.DeleteMatch)
+	authorized.POST("/v1/cat/match/approve", matchHandler.ApproveMatch)
 
 	r.Run()
 }

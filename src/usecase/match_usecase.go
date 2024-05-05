@@ -57,3 +57,23 @@ func (u *MatchUsecase) DeleteMatch(id int) (error) {
 
 	return err
 }
+
+func (u *MatchUsecase) GetCatIdByMatchId(id int) (int, int, error) {
+	matchCatId, userCatId, err := u.iMatchRepository.GetCatIdByMatchId(context.TODO(), id)
+	fmt.Println(err)
+
+  return matchCatId, userCatId, err
+}
+
+func (u *MatchUsecase) ApproveMatch(id int, matchCatId int, userCatId int) error {
+
+
+	// update matchCat
+	// update userCat
+	// delete matches
+
+	err := u.iMatchRepository.ApproveMatch(context.TODO(), id, matchCatId, userCatId)
+
+	return err
+}
+

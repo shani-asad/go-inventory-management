@@ -21,4 +21,6 @@ type MatchUsecaseInterface interface {
 	GetMatch(userId int) ([]dto.ResponseGetMatch, error)
 	GetMatchById(id int) (err error)
 	DeleteMatch(id int) (err error)
+	ApproveMatch(id int, matchCatId int, userCatId int) (err error)
+	GetCatIdByMatchId(id int) (matchCatId int, userCatIs int, err error)
 }
