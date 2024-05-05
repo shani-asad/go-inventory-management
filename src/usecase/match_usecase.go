@@ -6,6 +6,8 @@ import (
 	"cats-social/model/dto"
 	"cats-social/src/repository"
 	"context"
+	"fmt"
+
 	// "errors"
 	// "fmt"
 	"time"
@@ -40,3 +42,38 @@ func (u *MatchUsecase) GetMatch(userId int) ([]dto.ResponseGetMatch, error) {
 	response, err := u.iMatchRepository.GetMatch(context.TODO(), userId)
 	return response, err
 }
+
+func (u *MatchUsecase) GetMatchById(id int) (error) {
+	err := u.iMatchRepository.GetMatchById(context.TODO(), id)
+	fmt.Println(err)
+
+  return err
+}
+
+
+func (u *MatchUsecase) DeleteMatch(id int) (error) {
+	err := u.iMatchRepository.DeleteMatch(context.TODO(), id)
+	fmt.Println(err)
+
+	return err
+}
+
+func (u *MatchUsecase) GetCatIdByMatchId(id int) (int, int, error) {
+	matchCatId, userCatId, err := u.iMatchRepository.GetCatIdByMatchId(context.TODO(), id)
+	fmt.Println(err)
+
+  return matchCatId, userCatId, err
+}
+
+func (u *MatchUsecase) ApproveMatch(id int, matchCatId int, userCatId int) error {
+
+
+	// update matchCat
+	// update userCat
+	// delete matches
+
+	err := u.iMatchRepository.ApproveMatch(context.TODO(), id, matchCatId, userCatId)
+
+	return err
+}
+

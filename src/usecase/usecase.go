@@ -20,4 +20,8 @@ type AuthUsecaseInterface interface {
 type MatchUsecaseInterface interface {
 	CreateMatch(request dto.RequestCreateMatch) error
 	GetMatch(userId int) ([]dto.ResponseGetMatch, error)
+	GetMatchById(id int) (err error)
+	DeleteMatch(id int) (err error)
+	ApproveMatch(id int, matchCatId int, userCatId int) (err error)
+	GetCatIdByMatchId(id int) (matchCatId int, userCatIs int, err error)
 }

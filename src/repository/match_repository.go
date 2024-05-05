@@ -40,6 +40,7 @@ func (r *MatchRepository) CreateMatch(ctx context.Context, data database.Match) 
 func (r *MatchRepository) GetMatch(ctx context.Context, userId int) (response []dto.ResponseGetMatch, err error) {
 	query := `
 	select 
+		m.id AS id,
 		m.message AS message,
 		m.created_at	AS matchCreatedAt,
 		userCat.id	AS userCatId,
@@ -84,6 +85,7 @@ func (r *MatchRepository) GetMatch(ctx context.Context, userId int) (response []
 	for rows.Next() {
 		var match dto.ResponseGetMatch
 		err := rows.Scan(
+			&match.Id,
 			&match.Message,
 			&match.CreatedAt,
 			&match.UserCatDetail.Id,
@@ -117,3 +119,87 @@ func (r *MatchRepository) GetMatch(ctx context.Context, userId int) (response []
 	return response, err
 }
 
+
+func (r *MatchRepository) GetMatchById(ctx context.Context ,id int) (err error) {
+    query := `SELECT id FROM matches WHERE id = $1`
+
+    rows, err := r.db.QueryContext(ctx, query, id)
+    if err != nil {
+        return err
+    }
+    defer rows.Close()
+
+    // Check if no rows were returned
+    if !rows.Next() {
+        return fmt.Errorf("match with id %d not found", id)
+    }
+
+    return nil
+}
+
+
+func (r *MatchRepository) GetCatIdByMatchId(ctx context.Context, id int) (matchCatID int, userCatID int, err error) {
+    query := `SELECT match_cat_id, user_cat_id FROM matches WHERE id = $1`
+
+    rows, err := r.db.QueryContext(ctx, query, id)
+    if err != nil {
+        return 0, 0, err
+    }
+    defer rows.Close()
+
+    // Check if no rows were returned
+    if !rows.Next() {
+        return 0, 0, sql.ErrNoRows
+    }
+
+    // Scan the values into variables
+    if err := rows.Scan(&matchCatID, &userCatID); err != nil {
+        return 0, 0, err
+    }
+
+    return matchCatID, userCatID, nil
+}
+
+func (r *MatchRepository) DeleteMatch(ctx context.Context, id int) (error) {
+	query := `DELETE FROM matches WHERE id = $1`
+
+	_, err := r.db.ExecContext(ctx, query, id)
+
+	if err != nil {
+			return err
+	}
+
+	return nil
+}
+
+func (r *MatchRepository) ApproveMatch(ctx context.Context, id int, matchCatId int, userCatId int) (error) {
+	query := "UPDATE cats SET has_matched = true where id = $1 "
+	_, err := r.db.ExecContext(ctx, query, matchCatId)
+	if err != nil {
+		fmt.Println("Error iniiiiiii 111111111")
+		return err
+	}
+	
+	_, err = r.db.ExecContext(ctx, query, userCatId)
+	if err != nil {
+		fmt.Println("Error iniiiiiii 2222222")
+		return err
+	}
+
+	query = `
+		DELETE FROM matches
+		WHERE (match_cat_id = $2 OR user_cat_id = $2 OR match_cat_id = $3 OR user_cat_id = $3)
+		AND id != $1;
+	`
+	_, err = r.db.ExecContext(ctx, query, id, matchCatId, userCatId)
+	if err != nil {
+		fmt.Println("Error iniiiiiii 33333")
+		return err
+	}
+
+	if err != nil {
+			return err
+	}
+
+	return nil
+}

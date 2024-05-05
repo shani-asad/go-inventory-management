@@ -37,3 +37,7 @@ type RequestGetCat struct {
 	Owned bool `json:"owned"`
 	Search string `json:"search"`
 }
+
+type RequestApproveMatch struct {
+	MatchId int `json:"matchId"`
+}
