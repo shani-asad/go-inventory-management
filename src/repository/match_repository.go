@@ -106,6 +106,7 @@ func (r *MatchRepository) GetMatch(ctx context.Context, userId int) (response []
 		m.message AS message,
 		m.created_at	AS matchCreatedAt,
 		userCat.id	AS userCatId,
+		userCat.user_id AS userCatUserId,
 		userCat.name	AS userCatName,
 		userCat.race	AS userCatRace,
 		userCat.sex	AS userCatSex,
@@ -114,6 +115,7 @@ func (r *MatchRepository) GetMatch(ctx context.Context, userId int) (response []
 		userCat.image_urls	AS userCatImageUrls,
 		userCat.created_at	AS userCatCreatedAt,
 		matchCat.id	AS matchCatId,
+		matchCat.user_id AS matchCatUserId,
 		matchCat.name	AS matchCatName,
 		matchCat.race	AS matchCatRace,
 		matchCat.sex	AS matchCatSex,
@@ -151,6 +153,7 @@ func (r *MatchRepository) GetMatch(ctx context.Context, userId int) (response []
 			&match.Message,
 			&match.CreatedAt,
 			&match.UserCatDetail.Id,
+			&match.UserCatDetail.UserId,
 			&match.UserCatDetail.Name,
 			&match.UserCatDetail.Race,
 			&match.UserCatDetail.Sex,
@@ -159,6 +162,7 @@ func (r *MatchRepository) GetMatch(ctx context.Context, userId int) (response []
 			pq.Array(&match.UserCatDetail.ImageUrls),
 			&match.UserCatDetail.CreatedAt,
 			&match.MatchCatDetail.Id,
+			&match.MatchCatDetail.UserId,
 			&match.MatchCatDetail.Name,
 			&match.MatchCatDetail.Race,
 			&match.MatchCatDetail.Sex,
@@ -201,7 +205,18 @@ func (r *MatchRepository) GetMatchById(ctx context.Context ,id int) (err error) 
 
 
 func (r *MatchRepository) GetCatIdByMatchId(ctx context.Context, id int) (matchCatID int, userCatID int, err error) {
-    query := `SELECT match_cat_id, user_cat_id FROM matches WHERE id = $1 AND has_matched = false`
+    query := `SELECT id from cats where id in
+	(
+		SELECT 
+		match_cat_id FROM matches WHERE id = $1 
+	)
+	OR id in 
+	(
+		SELECT 
+		user_cat_id FROM matches WHERE id = $1 
+	)
+	AND has_matched = false
+	`
 
     rows, err := r.db.QueryContext(ctx, query, id)
     if err != nil {
@@ -209,14 +224,21 @@ func (r *MatchRepository) GetCatIdByMatchId(ctx context.Context, id int) (matchC
     }
     defer rows.Close()
 
-    // Check if no rows were returned
-    if !rows.Next() {
-        return 0, 0, sql.ErrNoRows
+    rowCount := 0
+
+    // Iterate over the rows
+    for rows.Next() {
+        var catID int
+        if err := rows.Scan(&catID); err != nil {
+            return 0, 0, err
+        }
+        matchCatID = catID // Update matchCatID with the first cat ID found
+        rowCount++
     }
 
-    // Scan the values into variables
-    if err := rows.Scan(&matchCatID, &userCatID); err != nil {
-        return 0, 0, err
+    // Check if exactly two rows were found
+    if rowCount != 2 {
+        return 0, 0, fmt.Errorf("expected 2 rows, found %d", rowCount)
     }
 
     return matchCatID, userCatID, nil

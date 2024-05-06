@@ -34,14 +34,12 @@ func main() {
     dbPassword := os.Getenv("DB_PASSWORD")
     dbParams := os.Getenv("DB_PARAMS")
 
-    // Construct the connection string
     connectionString := fmt.Sprintf(
         "postgres://%s:%s@%s:%s/%s?%s",
         dbUsername, dbPassword, dbHost, dbPort, dbName, dbParams,
     )
+	
 
-	fmt.Println("connectionString>> ", connectionString)
-	fmt.Println("os.Getenv(DATABASE_URL)>> ", os.Getenv("DATABASE_URL"))
 	postgreConfig := properties.PostgreConfig{
 		DatabaseURL: connectionString,
 	}

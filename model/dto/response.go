@@ -34,5 +34,5 @@ type ResponseGetMatch struct {
 	Message	string	`json:"message"`
 	CreatedAt	string	`json:"createdAt"`
 	MatchCatDetail CatDetail `json:"matchCatDetail"`
-	UserCatDetail CatDetail `json:"userhCatDetail"`
+	UserCatDetail CatDetail `json:"userCatDetail"`
 }
