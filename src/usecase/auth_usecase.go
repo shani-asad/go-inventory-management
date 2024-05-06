@@ -24,10 +24,10 @@ func NewAuthUsecase(
 	return &AuthUsecase{iUserRepository, helper}
 }
 
-func (u *AuthUsecase) Register(request dto.RequestCreateUser) error {
+func (u *AuthUsecase) Register(request dto.RequestCreateUser) (token string, err error) {
 	hash, err := bcrypt.GenerateFromPassword([]byte(request.Password), bcrypt.MinCost)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	data := database.User{
@@ -38,15 +38,22 @@ func (u *AuthUsecase) Register(request dto.RequestCreateUser) error {
 		UpdatedAt: time.Now(),
 	}
 
-	err = u.iUserRepository.CreateUser(context.TODO(), data)
-	return err
+	u.iUserRepository.CreateUser(context.TODO(), data)
+
+	userData, err := u.iUserRepository.GetUserByEmail(context.TODO(), request.Email)
+
+	fmt.Println(userData)
+
+	token, _ = u.helper.GenerateToken(userData.Id)
+
+	return token, err
 }
 
-func (u *AuthUsecase) Login(request dto.RequestAuth) (token string, err error) {
+func (u *AuthUsecase) Login(request dto.RequestAuth) (token string, user database.User, err error) {
 	// check creds on database
 	userData, err := u.iUserRepository.GetUserByEmail(context.TODO(), request.Email)
 	if err != nil {
-		return token, errors.New("wrong credentials")
+		return "", database.User{}, errors.New("user not found")
 	}
 
 	fmt.Println(userData)
@@ -54,12 +61,12 @@ func (u *AuthUsecase) Login(request dto.RequestAuth) (token string, err error) {
 	// check the password
 	isValid := u.verifyPassword(request.Password, userData.Password)
 	if !isValid {
-		return token, errors.New("wrong credentials")
+		return "", database.User{}, errors.New("wrong password")
 	}
 
 	token, _ = u.helper.GenerateToken(userData.Id)
 
-	return token, nil
+	return token, userData, nil
 }
 
 func (u *AuthUsecase) verifyPassword(password, passwordHash string) bool {

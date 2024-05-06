@@ -43,7 +43,7 @@ func (h *AuthHandler) Register(c *gin.Context) {
 		return
 	}
 
-	err = h.iAuthUsecase.Register(request)
+	token, err := h.iAuthUsecase.Register(request)
 	if err != nil {
 		log.Println("Register bad request ", err)
 		c.JSON(500, gin.H{"status": "internal server error", "message": err})
@@ -52,7 +52,12 @@ func (h *AuthHandler) Register(c *gin.Context) {
 
 	log.Println("Register successful")
 	c.JSON(200, gin.H{
-		"message": "user register success",
+    "message": "User registered successfully",
+    "data": gin.H{
+			"email": request.Email, 
+			"name": request.Name, 
+      "accessToken": token,
+		},
 	})
 }
 
@@ -72,16 +77,27 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		return
 	}
 
-	token, err := h.iAuthUsecase.Login(request)
+	token, userData, err := h.iAuthUsecase.Login(request)
 	if err != nil {
 		log.Println("Login bad request ", err)
-		c.JSON(500, gin.H{"status": "internal server error", "message": err})
-		return
+		if err.Error() == "user not found" {
+			c.JSON(404, gin.H{"status": "bad request", "message": "user not found"})
+			return
+		} 
+		if err.Error() == "wrong password" {
+			c.JSON(400, gin.H{"status": "bad request", "message": "wrong password"})
+			return
+		}
 	}
 
 	log.Println("Login successful")
 	c.JSON(200, gin.H{
-		"token": token,
+    "message": "User logged successfully",
+    "data": gin.H{
+			"email": userData.Email, 
+			"name": userData.Name, 
+      "accessToken": token,
+		},
 	})
 }
 

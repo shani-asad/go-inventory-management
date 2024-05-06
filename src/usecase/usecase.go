@@ -1,6 +1,9 @@
 package usecase
 
-import "cats-social/model/dto"
+import (
+	"cats-social/model/database"
+	"cats-social/model/dto"
+)
 
 type CatUsecaseInterface interface {
 	GetCatById(id int) (err error)
@@ -12,8 +15,8 @@ type CatUsecaseInterface interface {
 }
 
 type AuthUsecaseInterface interface {
-	Register(request dto.RequestCreateUser) error
-	Login(request dto.RequestAuth) (token string, err error)
+	Register(request dto.RequestCreateUser) (token string, err error)
+	Login(request dto.RequestAuth) (token string, user database.User, err error)
 	GetUserByEmail(email string) (exists bool, err error)
 }
 
