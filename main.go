@@ -1,15 +1,15 @@
 package main
 
 import (
-	"cats-social/app/server"
-	"cats-social/db"
-	"cats-social/helpers"
-	"cats-social/model/properties"
-	"cats-social/src/handler"
-	"cats-social/src/middleware"
-	"cats-social/src/repository"
-	"cats-social/src/usecase"
 	"fmt"
+	"inventory-management/app/server"
+	"inventory-management/db"
+	"inventory-management/helpers"
+	"inventory-management/model/properties"
+	"inventory-management/src/handler"
+	"inventory-management/src/middleware"
+	"inventory-management/src/repository"
+	"inventory-management/src/usecase"
 	"os"
 
 	"github.com/gin-gonic/gin"
@@ -28,80 +28,44 @@ func main() {
 	}
 
 	dbName := os.Getenv("DB_NAME")
-    dbPort := os.Getenv("DB_PORT")
-    dbHost := os.Getenv("DB_HOST")
-    dbUsername := os.Getenv("DB_USERNAME")
-    dbPassword := os.Getenv("DB_PASSWORD")
-    dbParams := os.Getenv("DB_PARAMS")
+	dbPort := os.Getenv("DB_PORT")
+	dbHost := os.Getenv("DB_HOST")
+	dbUsername := os.Getenv("DB_USERNAME")
+	dbPassword := os.Getenv("DB_PASSWORD")
+	dbParams := os.Getenv("DB_PARAMS")
 
-    connectionString := fmt.Sprintf(
-        "postgres://%s:%s@%s:%s/%s?%s",
-        dbUsername, dbPassword, dbHost, dbPort, dbName, dbParams,
-    )
-	
+	connectionString := fmt.Sprintf(
+		"postgres://%s:%s@%s:%s/%s?%s",
+		dbUsername, dbPassword, dbHost, dbPort, dbName, dbParams,
+	)
 
 	postgreConfig := properties.PostgreConfig{
 		DatabaseURL: connectionString,
 	}
 
 	db := db.InitPostgreDB(postgreConfig)
-	// run migrations
-	// m, err := migrate.New(os.Getenv("MIGRATION_PATH"), os.Getenv("DATABASE_URL"))
-	// if err != nil {
-	// 	log.Fatal("Error creating migration instance: ", err)
-	// }
 
-	// Run the migration up to the latest version
-	// if err := m.Up(); err != nil && err != migrate.ErrNoChange {
-	// 	log.Fatal("Error applying migrations:", err)
-	// }
-
-	// fmt.Println("Migration successfully applied")
 
 	helper := helpers.NewHelper()
 
 	// MIDDLEWARE
 	middleware := middleware.NewMiddleware(helper)
+
 	// REPOSITORY
-	userRepository := repository.NewUserRepository(db)
-	matchRepository := repository.NewMatchRepository(db)
-	catRepository := repository.NewCatRepository(db)
+	userRepository := repository.NewStaffRepository(db)
 
 	// USECASE
 	authUsecase := usecase.NewAuthUsecase(userRepository, helper)
-	matchUseCase := usecase.NewMatchUsecase(matchRepository, helper)
-	catUsecase := usecase.NewCatUsecase(catRepository)
 
 	// HANDLER
-	catHandler := handler.NewCatHandler(catUsecase)
 	authHandler := handler.NewAuthHandler(authUsecase)
-	matchHandler := handler.NewMatchHandler(matchUseCase)
 
 	// ROUTE
-	r.GET("/health", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "hello",
-		})
-	})
-
-	r.POST("/v1/user/register", authHandler.Register)
-	r.POST("/v1/user/login", authHandler.Login)
+	r.POST("/v1/staff/register", authHandler.Register)
+	r.POST("/v1/staff/login", authHandler.Login)
 
 	authorized := r.Group("")
 	authorized.Use(middleware.AuthMiddleware)
-
-	// CAT
-	authorized.POST("/v1/cat", catHandler.AddCat)
-	authorized.GET("/v1/cat", catHandler.GetCat)
-	authorized.PUT("/v1/cat/:id", catHandler.UpdateCat)
-	authorized.DELETE("/v1/cat/:id", catHandler.DeleteCat)
-
-	// MATCH
-	authorized.POST("/v1/cat/match", matchHandler.CreateMatch)
-	authorized.GET("/v1/cat/match", matchHandler.GetMatch)
-	authorized.DELETE("/v1/cat/match/:id", matchHandler.DeleteMatch)
-	authorized.POST("/v1/cat/match/approve", matchHandler.ApproveMatch)
-	authorized.POST("/v1/cat/match/reject", matchHandler.RejectMatch)
 
 	r.Run()
 }

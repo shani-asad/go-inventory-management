@@ -1,4 +1,4 @@
-module cats-social
+module inventory-management
 
 go 1.19
 

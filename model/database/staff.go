@@ -2,9 +2,9 @@ package database
 
 import "time"
 
-type User struct {
+type Staff struct {
 	Id			int
-	Email		string
+	PhoneNumber	string
 	Password	string
 	Name		string
 	CreatedAt 	time.Time

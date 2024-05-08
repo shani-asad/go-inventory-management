@@ -1,8 +1,8 @@
 package middleware
 
 import (
-	"cats-social/helpers"
 	"fmt"
+	"inventory-management/helpers"
 	"net/http"
 	"strconv"
 	"strings"

@@ -1,72 +1,72 @@
 package usecase
 
 import (
-	"cats-social/helpers"
-	"cats-social/model/database"
-	"cats-social/model/dto"
-	"cats-social/src/repository"
 	"context"
 	"errors"
 	"fmt"
+	"inventory-management/helpers"
+	"inventory-management/model/database"
+	"inventory-management/model/dto"
+	"inventory-management/src/repository"
 	"time"
 
 	"golang.org/x/crypto/bcrypt"
 )
 
 type AuthUsecase struct {
-	iUserRepository repository.UserRepositoryInterface
+	iStaffRepository repository.StaffRepositoryInterface
 	helper          helpers.HelperInterface
 }
 
 func NewAuthUsecase(
-	iUserRepository repository.UserRepositoryInterface,
+	iStaffRepository repository.StaffRepositoryInterface,
 	helper helpers.HelperInterface) AuthUsecaseInterface {
-	return &AuthUsecase{iUserRepository, helper}
+	return &AuthUsecase{iStaffRepository, helper}
 }
 
-func (u *AuthUsecase) Register(request dto.RequestCreateUser) (token string, err error) {
+func (u *AuthUsecase) Register(request dto.RequestCreateStaff) (token string, err error) {
 	hash, err := bcrypt.GenerateFromPassword([]byte(request.Password), bcrypt.MinCost)
 	if err != nil {
 		return "", err
 	}
 
-	data := database.User{
-		Email:     request.Email,
+	data := database.Staff{
+		PhoneNumber:     request.PhoneNumber,
 		Password:  string(hash),
 		Name:      request.Name,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
 
-	u.iUserRepository.CreateUser(context.TODO(), data)
+	u.iStaffRepository.CreateStaff(context.TODO(), data)
 
-	userData, err := u.iUserRepository.GetUserByEmail(context.TODO(), request.Email)
+	staffData, err := u.iStaffRepository.GetStaffByPhoneNumber(context.TODO(), request.PhoneNumber)
 
-	fmt.Println(userData)
+	fmt.Println(staffData)
 
-	token, _ = u.helper.GenerateToken(userData.Id)
+	token, _ = u.helper.GenerateToken(staffData.Id)
 
 	return token, err
 }
 
-func (u *AuthUsecase) Login(request dto.RequestAuth) (token string, user database.User, err error) {
+func (u *AuthUsecase) Login(request dto.RequestAuth) (token string, staff database.Staff, err error) {
 	// check creds on database
-	userData, err := u.iUserRepository.GetUserByEmail(context.TODO(), request.Email)
+	staffData, err := u.iStaffRepository.GetStaffByPhoneNumber(context.TODO(), request.PhoneNumber)
 	if err != nil {
-		return "", database.User{}, errors.New("user not found")
+		return "", database.Staff{}, errors.New("staff not found")
 	}
 
-	fmt.Println(userData)
+	fmt.Println(staffData)
 
 	// check the password
-	isValid := u.verifyPassword(request.Password, userData.Password)
+	isValid := u.verifyPassword(request.Password, staffData.Password)
 	if !isValid {
-		return "", database.User{}, errors.New("wrong password")
+		return "", database.Staff{}, errors.New("wrong password")
 	}
 
-	token, _ = u.helper.GenerateToken(userData.Id)
+	token, _ = u.helper.GenerateToken(staffData.Id)
 
-	return token, userData, nil
+	return token, staffData, nil
 }
 
 func (u *AuthUsecase) verifyPassword(password, passwordHash string) bool {
@@ -76,10 +76,10 @@ func (u *AuthUsecase) verifyPassword(password, passwordHash string) bool {
 	return err == nil
 }
 
-func (u *AuthUsecase) GetUserByEmail(email string) (bool, error) {
-	_, err := u.iUserRepository.GetUserByEmail(context.TODO(), email)
+func (u *AuthUsecase) GetStaffByPhoneNumber(phoneNumber string) (bool, error) {
+	_, err := u.iStaffRepository.GetStaffByPhoneNumber(context.TODO(), phoneNumber)
 	if err != nil {
-    return false, err
-  }
+		return false, err
+	}
 	return true, nil
 }

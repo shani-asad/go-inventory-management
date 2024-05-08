@@ -1,11 +1,10 @@
 package handler
 
 import (
-	"cats-social/model/dto"
-	"cats-social/src/usecase"
 	"errors"
+	"inventory-management/model/dto"
+	"inventory-management/src/usecase"
 	"log"
-	"regexp"
 
 	"github.com/gin-gonic/gin"
 )
@@ -19,7 +18,7 @@ func NewAuthHandler(iAuthUsecase usecase.AuthUsecaseInterface) AuthHandlerInterf
 }
 
 func (h *AuthHandler) Register(c *gin.Context) {
-	var request dto.RequestCreateUser
+	var request dto.RequestCreateStaff
 	err := c.ShouldBindJSON(&request)
 	if err != nil {
 		log.Println("Register bad request")
@@ -28,18 +27,18 @@ func (h *AuthHandler) Register(c *gin.Context) {
 	}
 
 	// Validate request payload
-	err = ValidateRegisterRequest(request.Email, request.Name, request.Password)
+	err = ValidateRegisterRequest(request.PhoneNumber, request.Name, request.Password)
 	if err != nil {
 		log.Println("Register bad request ", err)
 		c.JSON(400, gin.H{"status": "bad request", "message": err.Error()})
 		return
 	}
 
-	// Check if email already exists
-	exists, _ := h.iAuthUsecase.GetUserByEmail(request.Email)
+	// Check if phoneNumber already exists
+	exists, _ := h.iAuthUsecase.GetStaffByPhoneNumber(request.PhoneNumber)
 	if exists {
 		log.Println("Register bad request ", err)
-		c.JSON(409, gin.H{"status": "bad request", "message": "email already exists"})
+		c.JSON(409, gin.H{"status": "bad request", "message": "phoneNumber already exists"})
 		return
 	}
 
@@ -51,12 +50,12 @@ func (h *AuthHandler) Register(c *gin.Context) {
 	}
 
 	log.Println("Register successful")
-	c.JSON(200, gin.H{
-    "message": "User registered successfully",
-    "data": gin.H{
-			"email": request.Email, 
-			"name": request.Name, 
-      "accessToken": token,
+	c.JSON(201, gin.H{
+		"message": "Staff registered successfully",
+		"data": gin.H{
+			"phoneNumber":       request.PhoneNumber,
+			"name":        request.Name,
+			"accessToken": token,
 		},
 	})
 }
@@ -70,7 +69,7 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		return
 	}
 
-	err = ValidateLoginRequest(request.Email, request.Password)
+	err = ValidateLoginRequest(request.PhoneNumber, request.Password)
 	if err != nil {
 		log.Println("Login bad request ", err)
 		c.JSON(400, gin.H{"status": "bad request", "message": err.Error()})
@@ -83,7 +82,7 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		if err.Error() == "user not found" {
 			c.JSON(404, gin.H{"status": "bad request", "message": "user not found"})
 			return
-		} 
+		}
 		if err.Error() == "wrong password" {
 			c.JSON(400, gin.H{"status": "bad request", "message": "wrong password"})
 			return
@@ -92,20 +91,20 @@ func (h *AuthHandler) Login(c *gin.Context) {
 
 	log.Println("Login successful")
 	c.JSON(200, gin.H{
-    "message": "User logged successfully",
-    "data": gin.H{
-			"email": userData.Email, 
-			"name": userData.Name, 
-      "accessToken": token,
+		"message": "Staff logged successfully",
+		"data": gin.H{
+			"phoneNumber":       userData.PhoneNumber,
+			"name":        userData.Name,
+			"accessToken": token,
 		},
 	})
 }
 
 // ValidateRegisterRequest validates the register user request payload
-func ValidateRegisterRequest(email, name, password string) error {
-	// Validate email format
-	if !isValidEmail(email) {
-		return errors.New("email must be in valid email format")
+func ValidateRegisterRequest(phoneNumber, name, password string) error {
+	// Validate phoneNumber format
+	if !isValidPhoneNumber(phoneNumber) {
+		return errors.New("phoneNumber must be in valid phoneNumber format")
 	}
 
 	// Validate name length
@@ -121,10 +120,10 @@ func ValidateRegisterRequest(email, name, password string) error {
 	return nil
 }
 
-func ValidateLoginRequest(email, password string) error {
-	// Validate email format
-	if !isValidEmail(email) {
-		return errors.New("email must be in valid email format")
+func ValidateLoginRequest(phoneNumber, password string) error {
+	// Validate phoneNumber format
+	if !isValidPhoneNumber(phoneNumber) {
+		return errors.New("phoneNumber must be in valid phoneNumber format")
 	}
 
 	// Validate password length
@@ -135,10 +134,9 @@ func ValidateLoginRequest(email, password string) error {
 	return nil
 }
 
-// Helper function to validate email format
-func isValidEmail(email string) bool {
-	// Regular expression pattern for email format
-	emailRegex := `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
-	match, _ := regexp.MatchString(emailRegex, email)
-	return match
+// Helper function to validate phoneNumber format
+func isValidPhoneNumber(phoneNumber string) bool {
+	// Regular expression pattern for phoneNumber format
+	// TODO - implement
+	return false
 }
