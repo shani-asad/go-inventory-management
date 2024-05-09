@@ -50,6 +50,6 @@ func (r *StaffRepository) CreateStaff(ctx context.Context, data database.Staff) 
 }
 
 func (r *StaffRepository) GetStaffByPhoneNumber(ctx context.Context, phoneNumber string) (response database.Staff, err error) {
-	err = r.db.QueryRowContext(ctx, "SELECT id, name, phone_number FROM staffs WHERE phone_number = $1", phoneNumber).Scan(&response.Id, &response.Name, &response.PhoneNumber)
+	err = r.db.QueryRowContext(ctx, "SELECT id, name, phone_number, password FROM staffs WHERE phone_number = $1", phoneNumber).Scan(&response.Id, &response.Name, &response.PhoneNumber, &response.Password)
 	return response, err
 }

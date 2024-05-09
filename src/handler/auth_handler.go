@@ -88,6 +88,9 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		if err.Error() == "wrong password" {
 			c.JSON(400, gin.H{"status": "bad request", "message": "wrong password"})
 			return
+		} else {
+			c.JSON(500, gin.H{"status": "internal server error", "message": err})
+			return
 		}
 	}
 
@@ -95,8 +98,9 @@ func (h *AuthHandler) Login(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"message": "Staff logged successfully",
 		"data": gin.H{
-			"phoneNumber":       userData.PhoneNumber,
-			"name":        userData.Name,
+			"userId": userData.Id,
+			"phoneNumber": userData.PhoneNumber,
+			"name": userData.Name,
 			"accessToken": token,
 		},
 	})
