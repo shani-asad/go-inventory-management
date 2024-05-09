@@ -81,12 +81,15 @@ func (h *AuthHandler) Login(c *gin.Context) {
 	token, userData, err := h.iAuthUsecase.Login(request)
 	if err != nil {
 		log.Println("Login bad request ", err)
-		if err.Error() == "user not found" {
-			c.JSON(404, gin.H{"status": "bad request", "message": "user not found"})
+		if err.Error() == "staff not found" {
+			c.JSON(404, gin.H{"status": "bad request", "message": "staff not found"})
 			return
 		}
 		if err.Error() == "wrong password" {
 			c.JSON(400, gin.H{"status": "bad request", "message": "wrong password"})
+			return
+		} else {
+			c.JSON(500, gin.H{"status": "internal server error", "message": err.Error()})
 			return
 		}
 	}
