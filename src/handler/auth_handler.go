@@ -21,7 +21,7 @@ func (h *AuthHandler) Register(c *gin.Context) {
 	var request dto.RequestCreateStaff
 	err := c.ShouldBindJSON(&request)
 	if err != nil {
-		log.Println("Register bad request")
+		log.Println("Register bad request (ShouldBindJSON) >> ", err)
 		c.JSON(400, gin.H{"status": "bad request", "message": err})
 		return
 	}
@@ -29,7 +29,7 @@ func (h *AuthHandler) Register(c *gin.Context) {
 	// Validate request payload
 	err = ValidateRegisterRequest(request.PhoneNumber, request.Name, request.Password)
 	if err != nil {
-		log.Println("Register bad request ", err)
+		log.Println("Register bad request (ValidateRegisterRequest) >> ", err)
 		c.JSON(400, gin.H{"status": "bad request", "message": err.Error()})
 		return
 	}
@@ -37,14 +37,14 @@ func (h *AuthHandler) Register(c *gin.Context) {
 	// Check if phoneNumber already exists
 	exists, _ := h.iAuthUsecase.GetStaffByPhoneNumber(request.PhoneNumber)
 	if exists {
-		log.Println("Register bad request ", err)
+		log.Println("Register bad request (GetStaffByPhoneNumber) >> ", err)
 		c.JSON(409, gin.H{"status": "bad request", "message": "phoneNumber already exists"})
 		return
 	}
 
 	token, err := h.iAuthUsecase.Register(request)
 	if err != nil {
-		log.Println("Register bad request ", err)
+		log.Println("Register bad request (Register) >> ", err)
 		c.JSON(500, gin.H{"status": "internal server error", "message": err})
 		return
 	}
@@ -138,5 +138,5 @@ func ValidateLoginRequest(phoneNumber, password string) error {
 func isValidPhoneNumber(phoneNumber string) bool {
 	// Regular expression pattern for phoneNumber format
 	// TODO - implement
-	return false
+	return true
 }

@@ -2,6 +2,6 @@
 
 CREATE TABLE members (
     id SERIAL PRIMARY KEY,
-    phoneNumber VARCHAR(255),
+    phone_number VARCHAR(255),
     name VARCHAR(255)
 );

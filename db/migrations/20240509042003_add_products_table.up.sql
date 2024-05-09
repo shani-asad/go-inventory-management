@@ -12,5 +12,7 @@ CREATE TABLE products (
     price INT,
     stock INT,
     location VARCHAR(255),
-    isAvailable BOOLEAN
+    isAvailable BOOLEAN,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

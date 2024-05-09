@@ -17,7 +17,7 @@ func NewStaffRepository(db *sql.DB) StaffRepositoryInterface {
 
 func (r *StaffRepository) CreateStaff(ctx context.Context, data database.Staff) (dto.RegistrationResponse, error) {
 	query := `
-	INSERT INTO staff (phoneNumber, name, password, created_at, updated_at)
+	INSERT INTO staffs (phone_number, name, password, created_at, updated_at)
 	VALUES ($1, $2, $3, $4, $5)
 	RETURNING id`
 
@@ -50,6 +50,6 @@ func (r *StaffRepository) CreateStaff(ctx context.Context, data database.Staff) 
 }
 
 func (r *StaffRepository) GetStaffByPhoneNumber(ctx context.Context, phoneNumber string) (response database.Staff, err error) {
-	err = r.db.QueryRowContext(ctx, "SELECT id, name, phoneNumber FROM users WHERE phoneNumber = $1", phoneNumber).Scan(&response.Id, &response.Name, &response.PhoneNumber)
+	err = r.db.QueryRowContext(ctx, "SELECT id, name, phone_number FROM staffs WHERE phone_number = $1", phoneNumber).Scan(&response.Id, &response.Name, &response.PhoneNumber)
 	return response, err
 }

@@ -2,7 +2,9 @@
 
 CREATE TABLE staffs (
     id SERIAL PRIMARY KEY,
-    phoneNumber VARCHAR(255),
+    phone_number VARCHAR(255),
     name VARCHAR(255),
-    password VARCHAR(255)
+    password VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

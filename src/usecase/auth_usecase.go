@@ -42,7 +42,7 @@ func (u *AuthUsecase) Register(request dto.RequestCreateStaff) (token string, er
 
 	staffData, err := u.iStaffRepository.GetStaffByPhoneNumber(context.TODO(), request.PhoneNumber)
 
-	fmt.Println(staffData)
+	fmt.Println("staffData:::::: ", staffData)
 
 	token, _ = u.helper.GenerateToken(staffData.Id)
 
