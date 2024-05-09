@@ -1,14 +1,14 @@
 services:
-  app:
-    build: .
-    volumes:
-      - ./db/migrations:/app/db/migrations
-    ports:
-      - "8080:${APP_PORT}"
-    env_file: .env
-    depends_on:
-      db:
-        condition: service_healthy
+  # app:
+  #   build: .
+  #   volumes:
+  #     - ./db/migrations:/app/db/migrations
+  #   ports:
+  #     - "8080:${APP_PORT}"
+  #   env_file: .env
+  #   depends_on:
+  #     db:
+  #       condition: service_healthy
   db:
     platform: linux/x86_64
     image: postgres:14.1-alpine

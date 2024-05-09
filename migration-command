@@ -1,0 +1,6 @@
+UP
+migrate -database "postgres://postgres:postgres@localhost:5432/inventory-management?sslmode=disable" -path db/migrations -verbose up
+migrate -database "postgres://postgres:postgres@127.0.0.1:5432/inventory-management?sslmode=disable" -path db/migrations up
+
+Fix Version
+migrate -database "postgres://postgres:postgres@127.0.0.1:5432/inventory-management?sslmode=disable" -path ./db/migrations force VERSION_NUMBER
