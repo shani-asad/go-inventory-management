@@ -56,8 +56,6 @@ func (u *AuthUsecase) Login(request dto.RequestAuth) (token string, staff databa
 		return "", database.Staff{}, errors.New("staff not found")
 	}
 
-	fmt.Println(staffData)
-
 	// check the password
 	isValid := u.verifyPassword(request.Password, staffData.Password)
 	if !isValid {
