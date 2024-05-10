@@ -10,3 +10,10 @@ type AuthUsecaseInterface interface {
 	Login(request dto.RequestAuth) (token string, user database.Staff, err error)
 	GetStaffByPhoneNumber(email string) (exists bool, err error)
 }
+
+type ProductUsecaseInterface interface {
+	CreateProduct(dto.RequestUpsertProduct) (dto.ResponseCreateProduct, error)
+	GetProduct(dto.RequestGetProduct) (dto.ResponseGetProduct, error)
+	UpdateProduct(dto.RequestUpsertProduct) (statusCode int)
+	DeleteProduct(id int) (statusCode int)
+}

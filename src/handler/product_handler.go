@@ -1,0 +1,62 @@
+package handler
+
+import (
+	"inventory-management/model/dto"
+	"inventory-management/src/usecase"
+	"log"
+
+	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator"
+)
+
+type ProductHandler struct {
+	iProductUsecase usecase.ProductUsecaseInterface
+}
+
+func NewProductHandler(iProductUsecase usecase.ProductUsecaseInterface) ProductHandlerInterface {
+	return &ProductHandler{iProductUsecase}
+}
+
+func (h *ProductHandler) CreateProduct(c *gin.Context) {
+	var request dto.RequestUpsertProduct
+	err := c.ShouldBindJSON(&request)
+	if err != nil {
+		log.Println("Register bad request (ShouldBindJSON) >> ", err)
+		c.JSON(400, gin.H{"status": "bad request", "message": err})
+		return
+	}
+
+	err = validateProduct(request)
+	if err != nil {
+		log.Println("Create Product bad request ", err)
+		c.JSON(400, gin.H{"status": "bad request", "message": err.Error()})
+		return
+	}
+
+	response, err := h.iProductUsecase.CreateProduct(request)
+	if err != nil {
+		c.JSON(500, gin.H{"status": "internal server error", "message": err.Error()})
+	}
+
+	c.JSON(201, response)
+}
+
+func (h *ProductHandler) GetProduct(c *gin.Context) {
+
+}
+
+func (h *ProductHandler) UpdateProduct(c *gin.Context) {
+
+}
+
+func (h *ProductHandler) DeleteProduct(c *gin.Context) {
+
+}
+
+func validateProduct(product dto.RequestUpsertProduct) error {
+	validate := validator.New()
+	if err := validate.Struct(product); err != nil {
+		return err
+	}
+	return nil
+}

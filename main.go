@@ -58,7 +58,6 @@ func main() {
 
 	fmt.Println("Migration successfully applied")
 
-
 	helper := helpers.NewHelper()
 
 	// MIDDLEWARE
@@ -66,16 +65,24 @@ func main() {
 
 	// REPOSITORY
 	userRepository := repository.NewStaffRepository(db)
+	productRepository := repository.NewProductRepository(db)
 
 	// USECASE
 	authUsecase := usecase.NewAuthUsecase(userRepository, helper)
+	productUsecase := usecase.NewProductUsecase(productRepository, helper)
 
 	// HANDLER
 	authHandler := handler.NewAuthHandler(authUsecase)
+	productHandler := handler.NewProductHandler(productUsecase)
 
 	// ROUTE
 	r.POST("/v1/staff/register", authHandler.Register)
 	r.POST("/v1/staff/login", authHandler.Login)
+
+	r.POST("/v1/product", productHandler.CreateProduct)
+	r.GET("/v1/product", productHandler.GetProduct)
+	r.PUT("/v1/product", productHandler.UpdateProduct)
+	r.DELETE("/v1/product/{id}", productHandler.DeleteProduct)
 
 	authorized := r.Group("")
 	authorized.Use(middleware.AuthMiddleware)
