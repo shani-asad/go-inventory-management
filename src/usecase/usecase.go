@@ -10,3 +10,8 @@ type AuthUsecaseInterface interface {
 	Login(request dto.RequestAuth) (token string, user database.Staff, err error)
 	GetStaffByPhoneNumber(email string) (exists bool, err error)
 }
+
+type CustomerUsecaseInterface interface {
+  RegisterCustomer(request dto.RegisterCustomerRequest) (customer string, err error)
+  SearchCustomers(request dto.SearchCustomersRequest) (customers []dto.CustomerDTO, err error)
+}

@@ -66,16 +66,20 @@ func main() {
 
 	// REPOSITORY
 	userRepository := repository.NewStaffRepository(db)
+	customerRepository := repository.NewCustomerRepository(db)
 
 	// USECASE
 	authUsecase := usecase.NewAuthUsecase(userRepository, helper)
+	customerUsecase := usecase.NewCustomerUsecase(customerRepository)
 
 	// HANDLER
 	authHandler := handler.NewAuthHandler(authUsecase)
+	customerHandler := handler.NewCustomerHandler(customerUsecase)
 
 	// ROUTE
 	r.POST("/v1/staff/register", authHandler.Register)
 	r.POST("/v1/staff/login", authHandler.Login)
+	r.POST("/v1/customer/register", customerHandler.RegisterCustomer)
 
 	authorized := r.Group("")
 	authorized.Use(middleware.AuthMiddleware)

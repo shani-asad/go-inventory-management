@@ -6,3 +6,8 @@ type AuthHandlerInterface interface {
 	Register(c *gin.Context)
 	Login(c *gin.Context)
 }
+
+type CustomerHandlerInterface interface {
+	RegisterCustomer(c *gin.Context)
+	SearchCustomers(c *gin.Context)
+}

@@ -16,6 +16,11 @@ type RegisterCustomerRequest struct {
 	Name        string `json:"name"`
 }
 
+type SearchCustomersRequest struct {
+	PhoneNumber string `json:"phoneNumber"`
+	Name        string `json:"name"`
+}
+
 type CheckoutProductRequest struct {
 	CustomerID     string             `json:"customerId"`
 	//ProductDetails []ProductDetailDTO `json:"productDetails"`
