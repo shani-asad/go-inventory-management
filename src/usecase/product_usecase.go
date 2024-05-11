@@ -1,9 +1,12 @@
 package usecase
 
 import (
+	"context"
 	"inventory-management/helpers"
+	"inventory-management/model/database"
 	"inventory-management/model/dto"
 	"inventory-management/src/repository"
+	"strconv"
 )
 
 type ProductUsecase struct {
@@ -17,8 +20,26 @@ func NewProductUsecase(
 	return &ProductUsecase{iProductRepository, helper}
 }
 
-func (u *ProductUsecase) CreateProduct(dto.RequestUpsertProduct) (dto.ResponseCreateProduct, error) {
-	return dto.ResponseCreateProduct{}, nil
+func (u *ProductUsecase) CreateProduct(data dto.RequestUpsertProduct) (response dto.ResponseCreateProduct, err error) {
+	product := database.Product{
+		Name:        data.Name,
+		SKU:         data.SKU,
+		Category:    data.Category,
+		ImageURL:    data.ImageURL,
+		Notes:       data.Notes,
+		Price:       data.Price,
+		Stock:       data.Stock,
+		Location:    data.Location,
+		IsAvailable: false,
+	}
+
+	db, err := u.iProductRepository.CreateProduct(context.TODO(), product)
+	if err != nil {
+		return response, err
+	}
+
+	response.Data.ID = strconv.Itoa(db.ID)
+	return response, nil
 }
 
 func (u *ProductUsecase) GetProduct(dto.RequestGetProduct) (dto.ResponseGetProduct, error) {
