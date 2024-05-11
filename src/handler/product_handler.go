@@ -4,6 +4,7 @@ import (
 	"inventory-management/model/dto"
 	"inventory-management/src/usecase"
 	"log"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator"
@@ -50,7 +51,11 @@ func (h *ProductHandler) UpdateProduct(c *gin.Context) {
 }
 
 func (h *ProductHandler) DeleteProduct(c *gin.Context) {
+	id := c.Param("id")
+	productID, _ := strconv.Atoi(id)
+	statusCode := h.iProductUsecase.DeleteProduct(productID)
 
+	c.JSON(statusCode, nil)
 }
 
 func validateProduct(product dto.RequestUpsertProduct) error {

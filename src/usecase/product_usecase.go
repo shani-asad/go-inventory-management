@@ -51,5 +51,5 @@ func (u *ProductUsecase) UpdateProduct(dto.RequestUpsertProduct) (statusCode int
 }
 
 func (u *ProductUsecase) DeleteProduct(id int) (statusCode int) {
-	return 0
+	return u.iProductRepository.DeleteProduct(context.TODO(), id)
 }

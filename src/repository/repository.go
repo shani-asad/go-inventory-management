@@ -12,8 +12,8 @@ type StaffRepositoryInterface interface {
 }
 
 type ProductRepositoryInterface interface {
-	CreateProduct(context.Context, database.Product) (database.Product, error)
-	GetProduct(context.Context, dto.RequestGetProduct) ([]database.Product, error)
-	UpdateProduct(context.Context, database.Product) (database.Product, error)
-	DeleteProduct(context.Context, int) error
+	CreateProduct(ctx context.Context, data database.Product) (response database.Product, err error)
+	GetProduct(ctx context.Context, data dto.RequestGetProduct) (response []database.Product, err error)
+	UpdateProduct(ctx context.Context, data database.Product) (response database.Product, err error)
+	DeleteProduct(ctx context.Context, id int) (statusCode int)
 }

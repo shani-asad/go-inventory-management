@@ -46,6 +46,27 @@ func (r *ProductRepository) UpdateProduct(context.Context, database.Product) (da
 	return database.Product{}, nil
 }
 
-func (r *ProductRepository) DeleteProduct(context.Context, int) error {
-	return nil
+func (r *ProductRepository) DeleteProduct(ctx context.Context, id int) int {
+	// Prepare the SQL query
+	query := "DELETE FROM products WHERE id = $1"
+
+	// Execute the SQL query
+	result, err := r.db.ExecContext(ctx, query, id)
+	if err != nil {
+		fmt.Printf("failed to delete product: %v", err)
+		return 500
+	}
+
+	// Check if any rows were affected
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		fmt.Printf("failed to get rows affected: %v", err)
+		return 404
+	}
+	if rowsAffected == 0 {
+		fmt.Printf("product with ID %d not found", id)
+		return 404
+	}
+
+	return 200
 }
