@@ -37,14 +37,14 @@ func validateLimit(limit int) int {
     if limit >= 0 {
         return limit
     }
-
+	return 5
 }
 
 func validateOffset(offset int) int {
     if offset >= 0 {
         return offset
     }
-
+	return 0
 }
 
 
@@ -70,7 +70,7 @@ func validatePrice(price string) string {
 	if price == "asc" || price == "desc" {
 		return price
 	}
-
+	return ""
 }
 
 func validateInStock(inStock bool) bool {

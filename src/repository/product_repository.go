@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"fmt"
 	"inventory-management/model/dto"
-	"strings"
 )
 
 type ProductRepository struct {

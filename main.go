@@ -16,16 +16,19 @@ import (
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
+	"github.com/joho/godotenv"
 )
 
 func main() {
 	r := server.InitServer()
 
-	// err := godotenv.Load()
-	// if err != nil {
-	// 	fmt.Println("Error loading .env file:", err)
-	// 	return
-	// }
+	if(os.Getenv("DEVELOPER_NAME") != "naja"){
+		err := godotenv.Load()
+		if err != nil {
+			fmt.Println("Error loading .env file:", err)
+			return
+		}
+	}
 
 	dbName := os.Getenv("DB_NAME")
 	dbPort := os.Getenv("DB_PORT")
@@ -45,15 +48,17 @@ func main() {
 
 	db := db.InitPostgreDB(postgreConfig)
 
-	// run migrations
-	m, err := migrate.New(os.Getenv("MIGRATION_PATH"), os.Getenv("DATABASE_URL"))
-	if err != nil {
-		log.Fatal("Error creating migration instance: ", err)
-	}
-
-	// Run the migration up to the latest version
-	if err := m.Up(); err != nil && err != migrate.ErrNoChange {
-		log.Fatal("Error applying migrations:", err)
+	if(os.Getenv("DEVELOPER_NAME") == "naja"){
+		// run migrations
+		m, err := migrate.New(os.Getenv("MIGRATION_PATH"), os.Getenv("DATABASE_URL"))
+		if err != nil {
+			log.Fatal("Error creating migration instance: ", err)
+		}
+	
+		// Run the migration up to the latest version
+		if err := m.Up(); err != nil && err != migrate.ErrNoChange {
+			log.Fatal("Error applying migrations:", err)
+		}
 	}
 
 	fmt.Println("Migration successfully applied")
@@ -88,7 +93,7 @@ func main() {
 	r.GET("v1/customer", customerHandler.SearchCustomers)
 
 	// Search AKU
-	r.POST("/v1/product/customer", skuHandler.search)
+	r.POST("/v1/product/customer", skuHandler.Search)
 
 	authorized := r.Group("")
 	authorized.Use(middleware.AuthMiddleware)
