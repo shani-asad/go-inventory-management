@@ -21,7 +21,13 @@ func NewAuthHandler(iAuthUsecase usecase.AuthUsecaseInterface) AuthHandlerInterf
 
 func (h *AuthHandler) Register(c *gin.Context) {
 	var request dto.RequestCreateStaff
-	err := c.ShouldBindJSON(&request)
+	err := c.func validateLimit(limit int) int {
+		// Default to 5 if not provided or invalid
+		if limit >= 0 {
+			return limit
+		}
+		return 5 // Default limit
+	}(&request)
 	if err != nil {
 		log.Println("Register bad request (ShouldBindJSON) >> ", err)
 		c.JSON(400, gin.H{"status": "bad request", "message": err})
