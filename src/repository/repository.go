@@ -1,9 +1,9 @@
 package repository
 
 import (
+	"context"
 	"inventory-management/model/database"
 	"inventory-management/model/dto"
-	"context"
 )
 
 type StaffRepositoryInterface interface {
@@ -13,4 +13,10 @@ type StaffRepositoryInterface interface {
 
 type ProductRepositoryInterface interface {
 	SearchSku(context.Context, dto.SearchSkuParams) ([]dto.SearchSkuResponse, error)
+}
+
+type CustomerRepositoryInterface interface {
+  RegisterCustomer(context.Context, database.Customer) (string, error)
+	SearchCustomers(context.Context, dto.SearchCustomersRequest) ([]dto.CustomerDTO, error)
+	GetCustomerByPhoneNumber(context.Context, string) (database.Customer, error)
 }

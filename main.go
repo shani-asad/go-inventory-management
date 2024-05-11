@@ -10,19 +10,22 @@ import (
 	"inventory-management/src/middleware"
 	"inventory-management/src/repository"
 	"inventory-management/src/usecase"
+	"log"
 	"os"
 
-	"github.com/joho/godotenv"
+	"github.com/golang-migrate/migrate/v4"
+	_ "github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
 
 func main() {
 	r := server.InitServer()
 
-	err := godotenv.Load()
-	if err != nil {
-		fmt.Println("Error loading .env file:", err)
-		return
-	}
+	// err := godotenv.Load()
+	// if err != nil {
+	// 	fmt.Println("Error loading .env file:", err)
+	// 	return
+	// }
 
 	dbName := os.Getenv("DB_NAME")
 	dbPort := os.Getenv("DB_PORT")
@@ -42,6 +45,19 @@ func main() {
 
 	db := db.InitPostgreDB(postgreConfig)
 
+	// run migrations
+	m, err := migrate.New(os.Getenv("MIGRATION_PATH"), os.Getenv("DATABASE_URL"))
+	if err != nil {
+		log.Fatal("Error creating migration instance: ", err)
+	}
+
+	// Run the migration up to the latest version
+	if err := m.Up(); err != nil && err != migrate.ErrNoChange {
+		log.Fatal("Error applying migrations:", err)
+	}
+
+	fmt.Println("Migration successfully applied")
+
 
 	helper := helpers.NewHelper()
 
@@ -51,20 +67,25 @@ func main() {
 	// REPOSITORY
 	staffRepository := repository.NewStaffRepository(db)
 	productRepository := repository.NewProductRepository(db)
+	customerRepository := repository.NewCustomerRepository(db)
 
 	// USECASE
 	authUsecase := usecase.NewAuthUsecase(staffRepository, helper)
 	skuUsecase := usecase.NewSkuUsecase(productRepository)
+	customerUsecase := usecase.NewCustomerUsecase(customerRepository)
 
 	// HANDLER
 	authHandler := handler.NewAuthHandler(authUsecase)
 	skuHandler := handler.NewSkuHandler(skuUsecase)
+	customerHandler := handler.NewCustomerHandler(customerUsecase)
 
 	//// ROUTE
 
 	// Auth
 	r.POST("/v1/staff/register", authHandler.Register)
 	r.POST("/v1/staff/login", authHandler.Login)
+	r.POST("/v1/customer/register", customerHandler.RegisterCustomer)
+	r.GET("v1/customer", customerHandler.SearchCustomers)
 
 	// Search AKU
 	r.POST("/v1/product/customer", skuHandler.search)

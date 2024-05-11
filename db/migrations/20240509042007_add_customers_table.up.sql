@@ -3,5 +3,7 @@
 CREATE TABLE customers (
     id SERIAL PRIMARY KEY,
     phone_number VARCHAR(255),
-    name VARCHAR(255)
+    name VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

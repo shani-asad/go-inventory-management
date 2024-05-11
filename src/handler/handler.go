@@ -10,3 +10,8 @@ type AuthHandlerInterface interface {
 type SkuHandlerInterface interface {
 	Search(c *gin.Context)
 }
+
+type CustomerHandlerInterface interface {
+	RegisterCustomer(c *gin.Context)
+	SearchCustomers(c *gin.Context)
+}
