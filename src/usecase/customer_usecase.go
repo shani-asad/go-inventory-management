@@ -43,3 +43,11 @@ func (uc *CustomerUsecase) SearchCustomers(request dto.SearchCustomersRequest) (
 
     return customers, nil
 }
+
+func (u *CustomerUsecase) GetCustomerByPhoneNumber(phoneNumber string) (bool, error) {
+	_, err := u.iCustomerRepository.GetCustomerByPhoneNumber(context.TODO(), phoneNumber)
+	if err != nil {
+		return false, err
+	}
+	return true, nil
+}

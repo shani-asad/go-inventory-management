@@ -80,6 +80,7 @@ func main() {
 	r.POST("/v1/staff/register", authHandler.Register)
 	r.POST("/v1/staff/login", authHandler.Login)
 	r.POST("/v1/customer/register", customerHandler.RegisterCustomer)
+	r.GET("v1/customer", customerHandler.SearchCustomers)
 
 	authorized := r.Group("")
 	authorized.Use(middleware.AuthMiddleware)

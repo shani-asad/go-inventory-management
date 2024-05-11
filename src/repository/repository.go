@@ -14,4 +14,5 @@ type StaffRepositoryInterface interface {
 type CustomerRepositoryInterface interface {
   RegisterCustomer(context.Context, database.Customer) (string, error)
 	SearchCustomers(context.Context, dto.SearchCustomersRequest) ([]dto.CustomerDTO, error)
+	GetCustomerByPhoneNumber(context.Context, string) (database.Customer, error)
 }
