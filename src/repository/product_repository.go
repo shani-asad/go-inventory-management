@@ -24,17 +24,18 @@ func (r *ProductRepository) CreateProduct(ctx context.Context, data database.Pro
 
 	query := `INSERT INTO products (name, sku, category, image_url, notes, price, stock, location, is_available, created_at, updated_at)
 			   VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
-			   RETURNING id`
+			   RETURNING id, created_at`
 
 	// Execute the SQL query
 	var id int
-	err := r.db.QueryRowContext(ctx, query, data.Name, data.SKU, data.Category, data.ImageURL, data.Notes, data.Price, data.Stock, data.Location, data.IsAvailable, createdAt, updatedAt).Scan(&id)
+	err := r.db.QueryRowContext(ctx, query, data.Name, data.SKU, data.Category, data.ImageURL, data.Notes, data.Price, data.Stock, data.Location, data.IsAvailable, createdAt, updatedAt).Scan(&id, &createdAt)
 	if err != nil {
 		return database.Product{}, fmt.Errorf("failed to create product: %v", err)
 	}
 
 	// Set the generated ID in the product object
 	data.ID = id
+	data.CreatedAt, _ = time.Parse(time.RFC3339, createdAt)
 
 	return data, nil
 }
@@ -154,7 +155,7 @@ func (r *ProductRepository) DeleteProduct(ctx context.Context, id int) int {
 }
 
 func (r *ProductRepository) SearchSku(ctx context.Context, params dto.SearchSkuParams) (response []dto.SearchSkuResponse, err error) {
-	
+
 	query := constructQuery(params)
 	rows, err := r.db.QueryContext(ctx, query)
 
@@ -163,7 +164,7 @@ func (r *ProductRepository) SearchSku(ctx context.Context, params dto.SearchSkuP
 		err := rows.Scan(&sku)
 		fmt.Println(err)
 		if err != nil {
-				return nil, err
+			return nil, err
 		}
 		response = append(response, sku)
 	}
@@ -181,7 +182,7 @@ func constructQuery(params dto.SearchSkuParams) string {
 	if params.Sku != "" {
 		query += fmt.Sprintf(" AND sku = '%s'", params.Sku)
 	}
-	if(params.IsInstockValid){
+	if params.IsInstockValid {
 		if params.InStock {
 			query += " AND stock > 0"
 		} else {

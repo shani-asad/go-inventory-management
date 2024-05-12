@@ -73,7 +73,10 @@ func (h *ProductHandler) DeleteProduct(c *gin.Context) {
 	productID, _ := strconv.Atoi(id)
 	statusCode := h.iProductUsecase.DeleteProduct(productID)
 
-	c.JSON(statusCode, nil)
+	c.JSON(statusCode, dto.ResponseSuccess{
+		Status:  "success",
+		Message: fmt.Sprintf("product with id %s successfull deleted", id),
+	})
 }
 
 func validateProduct(product dto.RequestUpsertProduct) error {

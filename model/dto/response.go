@@ -82,3 +82,8 @@ type ResponseGetProduct struct {
 	Message string    `json:"message"`
 	Data    []Product `json:"data"`
 }
+
+type ResponseSuccess struct {
+	Status  string `json:"status"`
+	Message string `json:"message"`
+}
