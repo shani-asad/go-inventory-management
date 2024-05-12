@@ -80,6 +80,9 @@ func (u *ProductUsecase) GetProduct(param dto.RequestGetProduct) (response dto.R
 		response.Data = append(response.Data, product)
 	}
 
+	if len(response.Data) == 0 {
+		response.Data = []dto.Product{};
+	}
 	return response, err
 }
 
