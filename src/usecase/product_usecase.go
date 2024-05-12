@@ -38,7 +38,9 @@ func (u *ProductUsecase) CreateProduct(data dto.RequestUpsertProduct) (response 
 		return response, err
 	}
 
+	response.Message = "success"
 	response.Data.ID = strconv.Itoa(db.ID)
+	response.Data.CreatedAt = db.CreatedAt
 	return response, nil
 }
 
