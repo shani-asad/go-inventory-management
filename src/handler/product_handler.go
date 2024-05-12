@@ -62,7 +62,6 @@ func (h *ProductHandler) GetProduct(c *gin.Context) {
 	}
 
 	c.JSON(200, response)
-
 }
 
 func (h *ProductHandler) UpdateProduct(c *gin.Context) {
@@ -124,10 +123,7 @@ func (h *ProductHandler) DeleteProduct(c *gin.Context) {
 	productID, _ := strconv.Atoi(id)
 	statusCode := h.iProductUsecase.DeleteProduct(productID)
 
-	c.JSON(statusCode, dto.ResponseStatusAndMessage{
-		Status:  "success",
-		Message: fmt.Sprintf("product with id %s successfull deleted", id),
-	})
+	c.JSON(statusCode, dto.ResponseStatusAndMessage{})
 }
 
 func (h *ProductHandler) CheckoutProduct(c *gin.Context) {

@@ -140,6 +140,7 @@ func (r *ProductRepository) DeleteProduct(ctx context.Context, id int) int {
 
 	// Execute the SQL query
 	result, err := r.db.ExecContext(ctx, query, id)
+	fmt.Println("result>>>>>>", result)
 	if err != nil {
 		fmt.Printf("failed to delete product: %v", err)
 		return 500
@@ -147,6 +148,7 @@ func (r *ProductRepository) DeleteProduct(ctx context.Context, id int) int {
 
 	// Check if any rows were affected
 	rowsAffected, err := result.RowsAffected()
+	fmt.Println("rowsAffected>>>>>>", rowsAffected)
 	if err != nil {
 		fmt.Printf("failed to get rows affected: %v", err)
 		return 404
@@ -193,7 +195,7 @@ func (r *ProductRepository) SearchSku(ctx context.Context, params dto.SearchSkuP
 }
 
 func constructQuery(params dto.SearchSkuParams) string {
-	query := "SELECT id, name, sku, category, image_url, stock, price, location, created_at FROM products WHERE is_available = true"
+	query := "SELECT id, name, sku, category, image_url, stock, price, location, created_at FROM products WHERE is_available = true "
 	if params.Name != "" {
 		query += fmt.Sprintf(" AND LOWER(name) LIKE LOWER('%%%s%%')", params.Name)
 	}
