@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"inventory-management/model/database"
-	"inventory-management/model/dto"
 )
 
 type StaffRepository struct {
@@ -15,13 +14,13 @@ func NewStaffRepository(db *sql.DB) StaffRepositoryInterface {
 	return &StaffRepository{db}
 }
 
-func (r *StaffRepository) CreateStaff(ctx context.Context, data database.Staff) (dto.RegistrationResponse, error) {
+func (r *StaffRepository) CreateStaff(ctx context.Context, data database.Staff) (int, error) {
 	query := `
 	INSERT INTO staffs (phone_number, name, password, created_at, updated_at)
 	VALUES ($1, $2, $3, $4, $5)
 	RETURNING id`
 
-	var userId string
+	var staffId int
 	err := r.db.QueryRowContext(
 		ctx,
 		query,
@@ -30,23 +29,9 @@ func (r *StaffRepository) CreateStaff(ctx context.Context, data database.Staff) 
 		data.Password,
 		data.CreatedAt,
 		data.UpdatedAt,
-	).Scan(&userId)
+	).Scan(&staffId)
 
-	if err != nil {
-		return dto.RegistrationResponse{}, err
-	}
-
-	response := dto.RegistrationResponse{
-		Message: 201,
-		Data: dto.StaffData{
-			UserId:       userId,
-			PhoneNumber:  data.PhoneNumber,
-			Name:         data.Name,
-			AccessToken:  "your_access_token_here",
-		},
-	}
-
-	return response, nil
+	return staffId, err
 }
 
 func (r *StaffRepository) GetStaffByPhoneNumber(ctx context.Context, phoneNumber string) (response database.Staff, err error) {

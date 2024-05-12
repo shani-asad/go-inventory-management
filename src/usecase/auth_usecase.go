@@ -19,32 +19,34 @@ type AuthUsecase struct {
 }
 
 func NewAuthUsecase(
-	iStaffRepository repository.StaffRepositoryInterface,
-	helper helpers.HelperInterface) AuthUsecaseInterface {
+		iStaffRepository repository.StaffRepositoryInterface,
+		helper helpers.HelperInterface,
+	) AuthUsecaseInterface {
 	return &AuthUsecase{iStaffRepository, helper}
 }
 
 func (u *AuthUsecase) Register(request dto.RequestCreateStaff) (token string, err error) {
 	hash, err := bcrypt.GenerateFromPassword([]byte(request.Password), bcrypt.MinCost)
 	if err != nil {
+		fmt.Println("@ auth_usecase.go > Register >> GenerateFromPassword:", err)
 		return "", err
 	}
 
 	data := database.Staff{
-		PhoneNumber:     request.PhoneNumber,
-		Password:  string(hash),
-		Name:      request.Name,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		PhoneNumber: request.PhoneNumber,
+		Password:    string(hash),
+		Name:        request.Name,
+		CreatedAt:   time.Now(),
+		UpdatedAt:   time.Now(),
 	}
 
-	u.iStaffRepository.CreateStaff(context.TODO(), data)
+	staffId, err := u.iStaffRepository.CreateStaff(context.TODO(), data)
+	if err != nil {
+		fmt.Println("@ auth_usecase.go > Register >> CreateStaff:", err)
+		return "", err
+	}
 
-	staffData, err := u.iStaffRepository.GetStaffByPhoneNumber(context.TODO(), request.PhoneNumber)
-
-	fmt.Println("staffData:::::: ", staffData)
-
-	token, _ = u.helper.GenerateToken(staffData.Id)
+	token, _ = u.helper.GenerateToken(staffId)
 
 	return token, err
 }

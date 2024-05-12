@@ -13,7 +13,22 @@ type RequestCreateStaff struct {
 	Name        string `json:"name"`
 }
 
+type SearchSkuParams struct {
+	Limit int `json:"limit"`
+	Offset int `json:"offset"`
+	Name string `json:"name"`
+	Category string `json:"category"`
+	Sku string `json:"sku"`
+	Price string `json:"price"`
+	InStock bool `json:"inStock"`
+	IsInstockValid bool
+}
 type RegisterCustomerRequest struct {
+	PhoneNumber string `json:"phoneNumber"`
+	Name        string `json:"name"`
+}
+
+type SearchCustomersRequest struct {
 	PhoneNumber string `json:"phoneNumber"`
 	Name        string `json:"name"`
 }

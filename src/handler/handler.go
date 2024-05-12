@@ -15,3 +15,11 @@ type ProductHandlerInterface interface {
 	UpdateProduct(c *gin.Context)
 	DeleteProduct(c *gin.Context)
 }
+type SkuHandlerInterface interface {
+	Search(c *gin.Context)
+}
+
+type CustomerHandlerInterface interface {
+	RegisterCustomer(c *gin.Context)
+	SearchCustomers(c *gin.Context)
+}
