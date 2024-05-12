@@ -41,7 +41,7 @@ func (m *Middleware) AuthMiddleware(c *gin.Context) {
 	// Validate JWT
 	claims, err := m.helper.ValidateJWT(tokenString)
 	if err != nil {
-		c.JSON(http.StatusForbidden, "invalid token")
+		c.JSON(http.StatusUnauthorized, "invalid token")
 		c.Abort()
 		return
 	}
