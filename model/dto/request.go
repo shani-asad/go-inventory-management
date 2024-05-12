@@ -59,6 +59,7 @@ type RequestGetProduct struct {
 }
 
 type RequestUpsertProduct struct {
+	ID          int       `json:"-"`
 	Name        string    `json:"name" validate:"required,min=1,max=30"`
 	SKU         string    `json:"sku" validate:"required,min=1,max=30"`
 	Category    string    `json:"category" validate:"required,categoryEnum"`
@@ -69,4 +70,11 @@ type RequestUpsertProduct struct {
 	Location    string    `json:"location" validate:"required,min=1,max=200"`
 	IsAvailable *bool     `json:"isAvailable" validate:"required"`
 	CreatedAt   time.Time `json:"createdAt"`
+}
+
+type GetTransactionRequest struct {
+	CustomerId string	`json:"customerId"`
+	Limit	int	`json:"limit"`
+	Offset	int	`json:"offset"`
+	CreatedAt string	`json:"createdAt"`
 }

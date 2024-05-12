@@ -78,8 +78,60 @@ func (r *ProductRepository) GetProduct(ctx context.Context, param dto.RequestGet
 	return products, nil
 }
 
-func (r *ProductRepository) UpdateProduct(context.Context, database.Product) (database.Product, error) {
-	return database.Product{}, nil
+func (r *ProductRepository) UpdateProduct(ctx context.Context, product database.Product) (database.Product, error) {
+	query := `UPDATE products SET 
+		name = $1,
+		sku = $2,
+		category = $3,
+		image_url = $4,
+		notes = $5,
+		price = $6,
+		stock = $7,
+		location = $8,
+		is_available = $9,
+		updated_at = $10
+		WHERE id = $11
+		RETURNING id, name, sku, category, image_url, notes, price, stock, location, is_available, created_at, updated_at`
+
+	updatedAt := time.Now().Format(time.RFC3339)
+
+	row := r.db.QueryRowContext(ctx, query,
+		product.Name,
+		product.SKU,
+		product.Category,
+		product.ImageURL,
+		product.Notes,
+		product.Price,
+		product.Stock,
+		product.Location,
+		product.IsAvailable,
+		updatedAt,
+		product.ID)
+
+	var updatedProduct database.Product
+	err := row.Scan(
+		&updatedProduct.ID,
+		&updatedProduct.Name,
+		&updatedProduct.SKU,
+		&updatedProduct.Category,
+		&updatedProduct.ImageURL,
+		&updatedProduct.Notes,
+		&updatedProduct.Price,
+		&updatedProduct.Stock,
+		&updatedProduct.Location,
+		&updatedProduct.IsAvailable,
+		&updatedProduct.CreatedAt,
+		&updatedProduct.UpdatedAt,
+	)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return database.Product{}, fmt.Errorf("no product found with id %d", product.ID)
+		}
+		return database.Product{}, err
+	}
+
+	return updatedProduct, nil
 }
 
 func (r *ProductRepository) DeleteProduct(ctx context.Context, id int) int {
@@ -116,9 +168,8 @@ func (r *ProductRepository) SearchSku(ctx context.Context, params dto.SearchSkuP
 		fmt.Println("Error in product_repo > SearchSku > in QueryContext: ", err)
 		return nil, err
 	}
-	if rows == nil { return response, err}
+	if rows == nil { return response, err }
 
-	fmt.Println("rows>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", rows)
 	for rows.Next() {
 		var sku dto.SkuData
 		err := rows.Scan(
@@ -133,7 +184,6 @@ func (r *ProductRepository) SearchSku(ctx context.Context, params dto.SearchSkuP
 			&sku.CreatedAt,
 		)
 		fmt.Println("Error in product_repo > SearchSku > in loop rows: ", err)
-		fmt.Println("sku ++++++++++", sku)
 		if err != nil {
 			return nil, err
 		}

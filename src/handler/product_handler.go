@@ -66,6 +66,56 @@ func (h *ProductHandler) GetProduct(c *gin.Context) {
 }
 
 func (h *ProductHandler) UpdateProduct(c *gin.Context) {
+	id := c.Param("id")
+	productID, _ := strconv.Atoi(id)
+
+	paramGetProduct := dto.RequestGetProduct{
+		ID: id,
+	}
+
+	products, _ := h.iProductUsecase.GetProduct(paramGetProduct)
+	if len(products.Data) == 0 {
+		c.JSON(404, dto.ResponseStatusAndMessage{
+			Status:  "error",
+			Message: "not found",
+		})
+		return
+	}
+
+	var request dto.RequestUpsertProduct
+	err := c.ShouldBindJSON(&request)
+	if err != nil {
+		log.Println("Register bad request (ShouldBindJSON) >> ", err)
+		c.JSON(400, dto.ResponseStatusAndMessage{
+			Status:  "error",
+			Message: "bad request",
+		})
+		return
+	}
+
+	err = validateProduct(request)
+	if err != nil {
+		log.Println("Update Product bad request ", err)
+		c.JSON(400, dto.ResponseStatusAndMessage{
+			Status:  "error",
+			Message: "bad request",
+		})
+		return
+	}
+
+	request.ID = productID
+	statusCode := h.iProductUsecase.UpdateProduct(request)
+	if err != nil {
+		c.JSON(statusCode, dto.ResponseStatusAndMessage{
+			Status:  "failed",
+			Message: "internal server error",
+		})
+	}
+
+	c.JSON(statusCode, dto.ResponseStatusAndMessage{
+		Status:  "success",
+		Message: fmt.Sprintf("product with id %s successfull edited", id),
+	})
 
 }
 
@@ -74,7 +124,7 @@ func (h *ProductHandler) DeleteProduct(c *gin.Context) {
 	productID, _ := strconv.Atoi(id)
 	statusCode := h.iProductUsecase.DeleteProduct(productID)
 
-	c.JSON(statusCode, dto.ResponseSuccess{
+	c.JSON(statusCode, dto.ResponseStatusAndMessage{
 		Status:  "success",
 		Message: fmt.Sprintf("product with id %s successfull deleted", id),
 	})

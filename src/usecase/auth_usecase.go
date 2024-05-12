@@ -25,11 +25,11 @@ func NewAuthUsecase(
 	return &AuthUsecase{iStaffRepository, helper}
 }
 
-func (u *AuthUsecase) Register(request dto.RequestCreateStaff) (token string, err error) {
+func (u *AuthUsecase) Register(request dto.RequestCreateStaff) (token string, staffId int, err error) {
 	hash, err := bcrypt.GenerateFromPassword([]byte(request.Password), bcrypt.MinCost)
 	if err != nil {
 		fmt.Println("@ auth_usecase.go > Register >> GenerateFromPassword:", err)
-		return "", err
+		return "", 0, err
 	}
 
 	data := database.Staff{
@@ -40,15 +40,15 @@ func (u *AuthUsecase) Register(request dto.RequestCreateStaff) (token string, er
 		UpdatedAt:   time.Now(),
 	}
 
-	staffId, err := u.iStaffRepository.CreateStaff(context.TODO(), data)
+	staffId, err = u.iStaffRepository.CreateStaff(context.TODO(), data)
 	if err != nil {
 		fmt.Println("@ auth_usecase.go > Register >> CreateStaff:", err)
-		return "", err
+		return "", 0, err
 	}
 
 	token, _ = u.helper.GenerateToken(staffId)
 
-	return token, err
+	return token, staffId, err
 }
 
 func (u *AuthUsecase) Login(request dto.RequestAuth) (token string, staff database.Staff, err error) {
