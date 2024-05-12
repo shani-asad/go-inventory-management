@@ -96,7 +96,7 @@ func (u *ProductUsecase) UpdateProduct(data dto.RequestUpsertProduct) (statusCod
 		Notes:       data.Notes,
 		Price:       data.Price,
 		Stock:       data.Stock,
-		Location:    data.Location,
+		Location:    data.Location, 
 		IsAvailable: *data.IsAvailable,
 	}
 	_, err := u.iProductRepository.UpdateProduct(context.TODO(), product)
