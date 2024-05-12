@@ -45,11 +45,11 @@ type RequestGetProduct struct {
 	Limit       int    `form:"limit"`
 	Offset      int    `form:"offset"`
 	Name        string `form:"name"`
-	IsAvailable bool   `form:"isAvailable"`
+	IsAvailable string `form:"isAvailable"`
 	Category    string `form:"category"`
 	SKU         string `form:"sku"`
 	Price       string `form:"price"`
-	Instock     bool   `form:"inStock"`
+	Instock     string `form:"inStock"`
 	CreatedAt   string `form:"createdAt"`
 }
 

@@ -45,6 +45,7 @@ func (u *ProductUsecase) CreateProduct(data dto.RequestUpsertProduct) (response 
 }
 
 func (u *ProductUsecase) GetProduct(param dto.RequestGetProduct) (response dto.ResponseGetProduct, err error) {
+	param.Category = validateCategory(param.Category)
 	products, err := u.iProductRepository.GetProduct(context.TODO(), param)
 	if err != nil {
 		return response, err

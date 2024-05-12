@@ -45,10 +45,8 @@ func (r *ProductRepository) GetProduct(ctx context.Context, param dto.RequestGet
 	rows, err := r.db.QueryContext(ctx, query)
 
 	if err != nil {
-
-		return nil, fmt.Errorf("failed to fetch products: %v", err)
+		fmt.Printf("failed to fetch products: %v", err)
 	}
-
 
 	// Iterate over the result set
 	for rows.Next() {
@@ -173,16 +171,23 @@ func constructGetProductsQuery(params dto.RequestGetProduct) string {
 		query += fmt.Sprintf(" AND sku = '%s'", params.SKU)
 	}
 
-	if params.Instock {
+	if params.Instock == "true" {
 		query += " AND stock > 0"
 	}
 
-	if params.Price == "asc" {
-		query += " ORDER BY price ASC"
-	} else if params.Price == "desc" {
-		query += " ORDER BY price DESC"
+	if params.IsAvailable == "true" {
+		query += " AND is_available = true"
+	} else if params.IsAvailable == "false" {
+		query += " AND is_available = false"
 	}
 
+	if (params.Price == "asc" || params.Price == "desc") && (params.CreatedAt == "asc" || params.CreatedAt == "desc") {
+		query += fmt.Sprintf(" ORDER BY price %s, created_at %s", params.Price, params.CreatedAt)
+	}
+
+	if params.Limit == 0 {
+		params.Limit = 5
+	}
 	query += fmt.Sprintf(" LIMIT %d OFFSET %d", params.Limit, params.Offset)
 	fmt.Printf("query string: %s\n", query)
 	return query
