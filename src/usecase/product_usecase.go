@@ -30,7 +30,7 @@ func (u *ProductUsecase) CreateProduct(data dto.RequestUpsertProduct) (response 
 		Price:       data.Price,
 		Stock:       data.Stock,
 		Location:    data.Location,
-		IsAvailable: data.IsAvailable,
+		IsAvailable: *data.IsAvailable,
 	}
 
 	db, err := u.iProductRepository.CreateProduct(context.TODO(), product)
@@ -45,11 +45,11 @@ func (u *ProductUsecase) CreateProduct(data dto.RequestUpsertProduct) (response 
 }
 
 func (u *ProductUsecase) GetProduct(param dto.RequestGetProduct) (response dto.ResponseGetProduct, err error) {
+	param.Category = validateCategory(param.Category)
 	products, err := u.iProductRepository.GetProduct(context.TODO(), param)
 	if err != nil {
 		return response, err
 	}
-
 	response.Message = "success"
 	for _, v := range products {
 		product := dto.Product{
