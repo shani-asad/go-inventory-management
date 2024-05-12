@@ -18,7 +18,7 @@ type ProductUsecaseInterface interface {
 	DeleteProduct(id int) (statusCode int)
 }
 type SkuUsecaseInterface interface {
-	Search(request dto.SearchSkuParams) ([]dto.SearchSkuResponse, error)
+	Search(request dto.SearchSkuParams) ([]dto.SkuData, error)
 }
 
 type CustomerUsecaseInterface interface {

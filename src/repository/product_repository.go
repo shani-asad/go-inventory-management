@@ -154,15 +154,33 @@ func (r *ProductRepository) DeleteProduct(ctx context.Context, id int) int {
 	return 200
 }
 
-func (r *ProductRepository) SearchSku(ctx context.Context, params dto.SearchSkuParams) (response []dto.SearchSkuResponse, err error) {
+func (r *ProductRepository) SearchSku(ctx context.Context, params dto.SearchSkuParams) (response []dto.SkuData, err error) {
 
 	query := constructQuery(params)
-	rows, err := r.db.QueryContext(ctx, query)
 
+	rows, err := r.db.QueryContext(ctx, query)
+	if err != nil { 
+		fmt.Println("Error in product_repo > SearchSku > in QueryContext: ", err)
+		return nil, err
+	}
+	if rows == nil { return response, err}
+
+	fmt.Println("rows>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", rows)
 	for rows.Next() {
-		var sku dto.SearchSkuResponse
-		err := rows.Scan(&sku)
-		fmt.Println(err)
+		var sku dto.SkuData
+		err := rows.Scan(
+			&sku.Id,
+			&sku.Name,
+			&sku.Sku,
+			&sku.Category,
+			&sku.ImageUrl,
+			&sku.Stock,
+			&sku.Price,
+			&sku.Location,
+			&sku.CreatedAt,
+		)
+		fmt.Println("Error in product_repo > SearchSku > in loop rows: ", err)
+		fmt.Println("sku ++++++++++", sku)
 		if err != nil {
 			return nil, err
 		}
@@ -172,7 +190,7 @@ func (r *ProductRepository) SearchSku(ctx context.Context, params dto.SearchSkuP
 }
 
 func constructQuery(params dto.SearchSkuParams) string {
-	query := "SELECT * FROM products WHERE is_available = true"
+	query := "SELECT id, name, sku, category, image_url, stock, price, location, created_at FROM products WHERE is_available = true"
 	if params.Name != "" {
 		query += fmt.Sprintf(" AND LOWER(name) LIKE LOWER('%%%s%%')", params.Name)
 	}
