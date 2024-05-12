@@ -104,7 +104,7 @@ func main() {
 
 	authorized.POST("/v1/product", productHandler.CreateProduct)
 	authorized.GET("/v1/product", productHandler.GetProduct)
-	authorized.PUT("/v1/product", productHandler.UpdateProduct)
+	authorized.PUT("/v1/product/:id", productHandler.UpdateProduct)
 	authorized.DELETE("/v1/product/:id", productHandler.DeleteProduct)
 
 	authorized.GET("/v1/product/checkout/history", transactionHandler.GetTransactions)

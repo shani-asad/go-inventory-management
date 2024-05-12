@@ -71,8 +71,25 @@ func (u *ProductUsecase) GetProduct(param dto.RequestGetProduct) (response dto.R
 	return response, err
 }
 
-func (u *ProductUsecase) UpdateProduct(dto.RequestUpsertProduct) (statusCode int) {
-	return 0
+func (u *ProductUsecase) UpdateProduct(data dto.RequestUpsertProduct) (statusCode int) {
+	product := database.Product{
+		ID:          data.ID,
+		Name:        data.Name,
+		SKU:         data.SKU,
+		Category:    data.Category,
+		ImageURL:    data.ImageURL,
+		Notes:       data.Notes,
+		Price:       data.Price,
+		Stock:       data.Stock,
+		Location:    data.Location,
+		IsAvailable: *data.IsAvailable,
+	}
+	_, err := u.iProductRepository.UpdateProduct(context.TODO(), product)
+	if err != nil {
+		return 500
+	}
+
+	return 200
 }
 
 func (u *ProductUsecase) DeleteProduct(id int) (statusCode int) {
