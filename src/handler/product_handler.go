@@ -81,8 +81,23 @@ func (h *ProductHandler) DeleteProduct(c *gin.Context) {
 
 func validateProduct(product dto.RequestUpsertProduct) error {
 	validate := validator.New()
+	if err := validate.RegisterValidation("categoryEnum", categoryEnum); err != nil {
+		return err
+	}
+	// Perform validation
 	if err := validate.Struct(product); err != nil {
 		return err
 	}
 	return nil
+}
+
+func categoryEnum(fl validator.FieldLevel) bool {
+	category := fl.Field().String()
+	validCategories := map[string]bool{
+		"Clothing":    true,
+		"Accessories": true,
+		"Footwear":    true,
+		"Beverages":   true,
+	}
+	return validCategories[category]
 }

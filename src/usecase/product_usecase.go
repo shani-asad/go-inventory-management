@@ -30,7 +30,7 @@ func (u *ProductUsecase) CreateProduct(data dto.RequestUpsertProduct) (response 
 		Price:       data.Price,
 		Stock:       data.Stock,
 		Location:    data.Location,
-		IsAvailable: data.IsAvailable,
+		IsAvailable: *data.IsAvailable,
 	}
 
 	db, err := u.iProductRepository.CreateProduct(context.TODO(), product)
