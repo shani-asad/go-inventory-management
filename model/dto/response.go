@@ -2,6 +2,13 @@ package dto
 
 import "time"
 
+type StaffData struct {
+	UserId      string `json:"userId"`
+	PhoneNumber string `json:"phoneNumber"`
+	Name        string `json:"name"`
+	AccessToken string `json:"accessToken"`
+}
+
 type StaffLoginData struct {
 	UserId      string `json:"userId"`
 	PhoneNumber string `json:"phoneNumber"`
@@ -14,17 +21,9 @@ type CustomerDTO struct {
 	Name        string `json:"name"`
 	PhoneNumber string `json:"phoneNumber"`
 }
-
 type RegistrationResponse struct {
 	Message int       `json:"message"`
 	Data    StaffData `json:"data"`
-}
-
-type RegisterCustomerResponse struct {
-	Message string `json:"message"`
-	//Data    CustomerDTO `json:"data"`
-	Message int            `json:"message"`
-	Data    StaffLoginData `json:"data"`
 }
 
 type SkuData struct {
@@ -38,7 +37,6 @@ type SkuData struct {
 	Location  string `json:"location"`
 	CreatedAt string `json:"createdAt"`
 }
-
 type SearchSkuResponse struct {
 	Message string  `json:"message"`
 	Data    SkuData `json:"data"`
