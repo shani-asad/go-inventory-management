@@ -23,3 +23,7 @@ type CustomerHandlerInterface interface {
 	RegisterCustomer(c *gin.Context)
 	SearchCustomers(c *gin.Context)
 }
+
+type TransactionHandlerInterface interface {
+	GetTransactions(c *gin.Context)
+}

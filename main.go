@@ -72,18 +72,21 @@ func main() {
 	staffRepository := repository.NewStaffRepository(db)
 	productRepository := repository.NewProductRepository(db)
 	customerRepository := repository.NewCustomerRepository(db)
+	transactionRepository := repository.NewTransactionRepository(db)
 
 	// USECASE
 	authUsecase := usecase.NewAuthUsecase(staffRepository, helper)
 	productUsecase := usecase.NewProductUsecase(productRepository, helper)
 	skuUsecase := usecase.NewSkuUsecase(productRepository)
 	customerUsecase := usecase.NewCustomerUsecase(customerRepository)
+	transactionUsecase := usecase.NewTransactionUsecase(transactionRepository)
 
 	// HANDLER
 	authHandler := handler.NewAuthHandler(authUsecase)
 	productHandler := handler.NewProductHandler(productUsecase)
 	skuHandler := handler.NewSkuHandler(skuUsecase)
 	customerHandler := handler.NewCustomerHandler(customerUsecase)
+	transactionHandler := handler.NewTransactionHandler(transactionUsecase)
 
 	//// ROUTE
 
@@ -103,6 +106,8 @@ func main() {
 	authorized.GET("/v1/product", productHandler.GetProduct)
 	authorized.PUT("/v1/product", productHandler.UpdateProduct)
 	authorized.DELETE("/v1/product/:id", productHandler.DeleteProduct)
+
+	authorized.GET("/v1/product/checkout/history", transactionHandler.GetTransactions)
 
 	r.Run()
 }

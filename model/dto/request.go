@@ -65,3 +65,10 @@ type RequestUpsertProduct struct {
 	IsAvailable *bool     `json:"isAvailable" validate:"required"`
 	CreatedAt   time.Time `json:"createdAt"`
 }
+
+type GetTransactionRequest struct {
+	CustomerId string	`json:"customerId"`
+	Limit	int	`json:"limit"`
+	Offset	int	`json:"offset"`
+	CreatedAt string	`json:"createdAt"`
+}

@@ -116,9 +116,8 @@ func (r *ProductRepository) SearchSku(ctx context.Context, params dto.SearchSkuP
 		fmt.Println("Error in product_repo > SearchSku > in QueryContext: ", err)
 		return nil, err
 	}
-	if rows == nil { return response, err}
+	if rows == nil { return response, err }
 
-	fmt.Println("rows>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", rows)
 	for rows.Next() {
 		var sku dto.SkuData
 		err := rows.Scan(
@@ -133,7 +132,6 @@ func (r *ProductRepository) SearchSku(ctx context.Context, params dto.SearchSkuP
 			&sku.CreatedAt,
 		)
 		fmt.Println("Error in product_repo > SearchSku > in loop rows: ", err)
-		fmt.Println("sku ++++++++++", sku)
 		if err != nil {
 			return nil, err
 		}

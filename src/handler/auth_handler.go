@@ -6,6 +6,7 @@ import (
 	"inventory-management/src/usecase"
 	"log"
 	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -44,7 +45,7 @@ func (h *AuthHandler) Register(c *gin.Context) {
 		return
 	}
 
-	token, err := h.iAuthUsecase.Register(request)
+	token, staffId, err := h.iAuthUsecase.Register(request)
 	if err != nil {
 		log.Println("Register bad request (Register) >> ", err)
 		c.JSON(500, gin.H{"status": "internal server error", "message": err})
@@ -55,7 +56,8 @@ func (h *AuthHandler) Register(c *gin.Context) {
 	c.JSON(201, gin.H{
 		"message": "Staff registered successfully",
 		"data": gin.H{
-			"phoneNumber":       request.PhoneNumber,
+			"userId": strconv.Itoa(staffId),
+			"phoneNumber": request.PhoneNumber,
 			"name":        request.Name,
 			"accessToken": token,
 		},
@@ -98,7 +100,7 @@ func (h *AuthHandler) Login(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"message": "Staff logged successfully",
 		"data": gin.H{
-			"userId": userData.Id,
+			"userId": strconv.Itoa(userData.Id),
 			"phoneNumber": userData.PhoneNumber,
 			"name": userData.Name,
 			"accessToken": token,

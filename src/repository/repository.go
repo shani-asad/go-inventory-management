@@ -24,3 +24,7 @@ type CustomerRepositoryInterface interface {
 	SearchCustomers(context.Context, dto.SearchCustomersRequest) ([]dto.CustomerDTO, error)
 	GetCustomerByPhoneNumber(context.Context, string) (database.Customer, error)
 }
+
+type TransactionRepositoryInterface interface {
+	GetTransactions(context.Context, dto.GetTransactionRequest) ([]dto.TransactionData, error)
+}

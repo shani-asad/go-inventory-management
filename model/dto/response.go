@@ -87,3 +87,18 @@ type ResponseSuccess struct {
 	Status  string `json:"status"`
 	Message string `json:"message"`
 }
+
+
+type ProductDetail struct {
+    ProductID string `json:"productId"`
+    Quantity  int    `json:"quantity"`
+}
+
+type TransactionData struct {
+    TransactionID  string          `json:"transactionId"`
+    CustomerID     string          `json:"customerId"`
+    ProductDetails []ProductDetail `json:"productDetails"`
+    Paid           int             `json:"paid"`
+    Change         int             `json:"change"`
+    CreatedAt      time.Time       `json:"createdAt"`
+}
