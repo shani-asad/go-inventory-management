@@ -6,6 +6,7 @@ import (
 	"inventory-management/src/usecase"
 	"log"
 	"net/http"
+	"regexp"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -145,25 +146,25 @@ func (h *ProductHandler) CheckoutProduct(c *gin.Context) {
 	// Call the usecase layer
 	if err := h.iProductUsecase.CheckoutProduct(request); err != nil {
 		log.Println("Failed to checkout product >> ", err)
-    switch err.Error() {
-    case usecase.ErrCustomerNotFound:
-        c.JSON(http.StatusNotFound, gin.H{"status": "error", "message": "Customer not found"})
-    case usecase.ErrProductNotFound:
-        c.JSON(http.StatusNotFound, gin.H{"status": "error", "message": "One of the products not found"})
-    case usecase.ErrValidation:
-        c.JSON(http.StatusBadRequest, gin.H{"status": "bad request", "message": "Request doesn’t pass validation"})
-    case usecase.ErrPaidNotEnough:
-        c.JSON(http.StatusBadRequest, gin.H{"status": "bad request", "message": "Paid amount is not enough based on all bought products"})
-    case usecase.ErrChangeIncorrect:
-        c.JSON(http.StatusBadRequest, gin.H{"status": "bad request", "message": "Change is incorrect based on all bought products and the amount paid"})
-    case usecase.ErrProductStockInsufficient:
-        c.JSON(http.StatusBadRequest, gin.H{"status": "bad request", "message": "One of the product's stock is not enough"})
-    case usecase.ErrProductNotAvailable:
-        c.JSON(http.StatusBadRequest, gin.H{"status": "bad request", "message": "One of the products is not available"})
-    default:
-        c.JSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "Internal server error"})
-    }
-    return
+		switch err.Error() {
+		case usecase.ErrCustomerNotFound:
+			c.JSON(http.StatusNotFound, gin.H{"status": "error", "message": "Customer not found"})
+		case usecase.ErrProductNotFound:
+			c.JSON(http.StatusNotFound, gin.H{"status": "error", "message": "One of the products not found"})
+		case usecase.ErrValidation:
+			c.JSON(http.StatusBadRequest, gin.H{"status": "bad request", "message": "Request doesn’t pass validation"})
+		case usecase.ErrPaidNotEnough:
+			c.JSON(http.StatusBadRequest, gin.H{"status": "bad request", "message": "Paid amount is not enough based on all bought products"})
+		case usecase.ErrChangeIncorrect:
+			c.JSON(http.StatusBadRequest, gin.H{"status": "bad request", "message": "Change is incorrect based on all bought products and the amount paid"})
+		case usecase.ErrProductStockInsufficient:
+			c.JSON(http.StatusBadRequest, gin.H{"status": "bad request", "message": "One of the product's stock is not enough"})
+		case usecase.ErrProductNotAvailable:
+			c.JSON(http.StatusBadRequest, gin.H{"status": "bad request", "message": "One of the products is not available"})
+		default:
+			c.JSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "Internal server error"})
+		}
+		return
 	}
 
 	// Return success response
@@ -175,6 +176,12 @@ func validateProduct(product dto.RequestUpsertProduct) error {
 	if err := validate.RegisterValidation("categoryEnum", categoryEnum); err != nil {
 		return err
 	}
+
+	if err := validate.RegisterValidation("completeURL", validateCompleteURL); err != nil {
+		fmt.Println("Failed to register validation function:", err)
+		return err
+	}
+
 	// Perform validation
 	if err := validate.Struct(product); err != nil {
 		return err
@@ -204,3 +211,13 @@ func validateCheckoutProductRequest(req dto.CheckoutProductRequest) error {
 	return nil
 }
 
+func validateCompleteURL(fl validator.FieldLevel) bool {
+	urlString := fl.Field().String()
+	// Regular expression to match a complete URL with scheme and valid host
+	pattern := `^(http|https)://[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/?`
+	matched, err := regexp.MatchString(pattern, urlString)
+	if err != nil {
+		return false
+	}
+	return matched
+}

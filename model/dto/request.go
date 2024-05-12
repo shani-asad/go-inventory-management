@@ -63,7 +63,7 @@ type RequestUpsertProduct struct {
 	Name        string    `json:"name" validate:"required,min=1,max=30"`
 	SKU         string    `json:"sku" validate:"required,min=1,max=30"`
 	Category    string    `json:"category" validate:"required,categoryEnum"`
-	ImageURL    string    `json:"imageUrl" validate:"required,url"`
+	ImageURL    string    `json:"imageUrl" validate:"required,completeURL"`
 	Notes       string    `json:"notes" validate:"required,min=1,max=200"`
 	Price       float64   `json:"price" validate:"required,min=1"`
 	Stock       int       `json:"stock" validate:"required,min=1,max=100000"`
