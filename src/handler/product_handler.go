@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"inventory-management/model/dto"
 	"inventory-management/src/usecase"
 	"log"
@@ -43,6 +44,23 @@ func (h *ProductHandler) CreateProduct(c *gin.Context) {
 }
 
 func (h *ProductHandler) GetProduct(c *gin.Context) {
+	param := dto.RequestGetProduct{}
+
+	err := c.ShouldBind(&param)
+	if err != nil {
+		log.Println("Product bad request (ShouldBindJSON) >> ", err)
+		c.JSON(400, gin.H{"status": "bad request", "message": err.Error()})
+		return
+	}
+
+	response, err := h.iProductUsecase.GetProduct(param)
+	if err != nil {
+		fmt.Println("error get product", err)
+		c.JSON(500, gin.H{"status": "internal server error", "message": err.Error()})
+		return
+	}
+
+	c.JSON(200, response)
 
 }
 

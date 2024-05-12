@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"inventory-management/model/database"
 	"inventory-management/model/dto"
+	"strings"
 	"time"
 )
 
@@ -38,8 +39,89 @@ func (r *ProductRepository) CreateProduct(ctx context.Context, data database.Pro
 	return data, nil
 }
 
-func (r *ProductRepository) GetProduct(context.Context, dto.RequestGetProduct) ([]database.Product, error) {
-	return []database.Product{}, nil
+func (r *ProductRepository) GetProduct(ctx context.Context, param dto.RequestGetProduct) (products []database.Product, err error) {
+	query := "SELECT * FROM products WHERE 1=1"
+
+	// Add conditions based on the request parameters
+	var args []interface{}
+
+	if param.ID != "" {
+		query += " AND id = $1"
+		args = append(args, param.ID)
+	}
+
+	if param.Name != "" {
+		query += " AND LOWER(name) LIKE LOWER($2)"
+		args = append(args, "%"+param.Name+"%")
+	}
+
+	if param.IsAvailable {
+		query += " AND is_available = true"
+	}
+
+	if param.Category != "" {
+		query += " AND category = $3"
+		args = append(args, param.Category)
+	}
+
+	if param.SKU != "" {
+		query += " AND sku = $4"
+		args = append(args, param.SKU)
+	}
+
+	if param.Instock {
+		query += " AND stock > 0"
+	}
+
+	if param.CreatedAt != "" {
+		if strings.ToLower(param.CreatedAt) == "asc" {
+			query += " ORDER BY created_at ASC"
+		} else if strings.ToLower(param.CreatedAt) == "desc" {
+			query += " ORDER BY created_at DESC"
+		}
+	}
+
+	query += " LIMIT $5 OFFSET $6"
+
+	// Add limit and offset
+	args = append(args, param.Limit)
+	args = append(args, param.Offset)
+
+	// Execute the SQL query
+	rows, err := r.db.QueryContext(ctx, query, args...)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch products: %v", err)
+	}
+	defer rows.Close()
+
+	// Iterate over the result set
+	for rows.Next() {
+		var product database.Product
+		err := rows.Scan(
+			&product.ID,
+			&product.Name,
+			&product.SKU,
+			&product.Category,
+			&product.ImageURL,
+			&product.Notes,
+			&product.Price,
+			&product.Stock,
+			&product.Location,
+			&product.IsAvailable,
+			&product.CreatedAt,
+			&product.UpdatedAt,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan product: %v", err)
+		}
+		products = append(products, product)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error during iteration of product rows: %v", err)
+	}
+
+	return products, nil
 }
 
 func (r *ProductRepository) UpdateProduct(context.Context, database.Product) (database.Product, error) {

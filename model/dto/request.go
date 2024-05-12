@@ -26,16 +26,16 @@ type CheckoutProductRequest struct {
 }
 
 type RequestGetProduct struct {
-	ID          string    `json:"id"`
-	Limit       int       `json:"limit"`
-	Offset      int       `json:"offset"`
-	Name        string    `json:"name"`
-	IsAvailable bool      `json:"isAvailable"`
-	Category    string    `json:"category"`
-	SKU         string    `json:"sku"`
-	Price       string    `json:"price"`
-	Instock     bool      `json:"inStock"`
-	CreatedAt   time.Time `json:"createdAt"`
+	ID          string `form:"id"`
+	Limit       int    `form:"limit"`
+	Offset      int    `form:"offset"`
+	Name        string `form:"name"`
+	IsAvailable bool   `form:"isAvailable"`
+	Category    string `form:"category"`
+	SKU         string `form:"sku"`
+	Price       string `form:"price"`
+	Instock     bool   `form:"inStock"`
+	CreatedAt   string `form:"createdAt"`
 }
 
 type RequestUpsertProduct struct {

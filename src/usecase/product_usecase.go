@@ -42,8 +42,31 @@ func (u *ProductUsecase) CreateProduct(data dto.RequestUpsertProduct) (response 
 	return response, nil
 }
 
-func (u *ProductUsecase) GetProduct(dto.RequestGetProduct) (dto.ResponseGetProduct, error) {
-	return dto.ResponseGetProduct{}, nil
+func (u *ProductUsecase) GetProduct(param dto.RequestGetProduct) (response dto.ResponseGetProduct, err error) {
+	products, err := u.iProductRepository.GetProduct(context.TODO(), param)
+	if err != nil {
+		return response, err
+	}
+
+	response.Message = "success"
+	for _, v := range products {
+		product := dto.Product{
+			ID:          strconv.Itoa(v.ID),
+			Name:        v.Name,
+			SKU:         v.SKU,
+			Category:    v.Category,
+			ImageURL:    v.ImageURL,
+			Stock:       v.Stock,
+			Notes:       v.Notes,
+			Price:       v.Price,
+			Location:    v.Location,
+			IsAvailable: v.IsAvailable,
+			CreatedAt:   v.CreatedAt,
+		}
+		response.Data = append(response.Data, product)
+	}
+
+	return response, err
 }
 
 func (u *ProductUsecase) UpdateProduct(dto.RequestUpsertProduct) (statusCode int) {
