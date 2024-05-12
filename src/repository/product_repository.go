@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"inventory-management/model/database"
 	"inventory-management/model/dto"
-	"strings"
+	"strconv"
 	"time"
 )
 
@@ -41,59 +41,14 @@ func (r *ProductRepository) CreateProduct(ctx context.Context, data database.Pro
 }
 
 func (r *ProductRepository) GetProduct(ctx context.Context, param dto.RequestGetProduct) (products []database.Product, err error) {
-	query := "SELECT * FROM products WHERE 1=1"
+	query := constructGetProductsQuery(param)
+	rows, err := r.db.QueryContext(ctx, query)
 
-	// Add conditions based on the request parameters
-	var args []interface{}
-
-	if param.ID != "" {
-		query += " AND id = $1"
-		args = append(args, param.ID)
-	}
-
-	if param.Name != "" {
-		query += " AND LOWER(name) LIKE LOWER($2)"
-		args = append(args, "%"+param.Name+"%")
-	}
-
-	if param.IsAvailable {
-		query += " AND is_available = true"
-	}
-
-	if param.Category != "" {
-		query += " AND category = $3"
-		args = append(args, param.Category)
-	}
-
-	if param.SKU != "" {
-		query += " AND sku = $4"
-		args = append(args, param.SKU)
-	}
-
-	if param.Instock {
-		query += " AND stock > 0"
-	}
-
-	if param.CreatedAt != "" {
-		if strings.ToLower(param.CreatedAt) == "asc" {
-			query += " ORDER BY created_at ASC"
-		} else if strings.ToLower(param.CreatedAt) == "desc" {
-			query += " ORDER BY created_at DESC"
-		}
-	}
-
-	query += " LIMIT $5 OFFSET $6"
-
-	// Add limit and offset
-	args = append(args, param.Limit)
-	args = append(args, param.Offset)
-
-	// Execute the SQL query
-	rows, err := r.db.QueryContext(ctx, query, args...)
 	if err != nil {
+
 		return nil, fmt.Errorf("failed to fetch products: %v", err)
 	}
-	defer rows.Close()
+
 
 	// Iterate over the result set
 	for rows.Next() {
@@ -195,5 +150,40 @@ func constructQuery(params dto.SearchSkuParams) string {
 		query += " ORDER BY price DESC"
 	}
 	query += fmt.Sprintf(" LIMIT %d OFFSET %d", params.Limit, params.Offset)
+	return query
+}
+
+func constructGetProductsQuery(params dto.RequestGetProduct) string {
+	query := "SELECT * FROM products WHERE 1=1"
+
+	if params.ID != "" {
+		iDInt, _ := strconv.Atoi(params.ID)
+		query += fmt.Sprintf(" AND id = %v", iDInt)
+	}
+
+	if params.Name != "" {
+		query += fmt.Sprintf(" AND LOWER(name) LIKE LOWER('%%%s%%')", params.Name)
+	}
+
+	if params.Category != "" {
+		query += fmt.Sprintf(" AND category = '%s'", params.Category)
+	}
+
+	if params.SKU != "" {
+		query += fmt.Sprintf(" AND sku = '%s'", params.SKU)
+	}
+
+	if params.Instock {
+		query += " AND stock > 0"
+	}
+
+	if params.Price == "asc" {
+		query += " ORDER BY price ASC"
+	} else if params.Price == "desc" {
+		query += " ORDER BY price DESC"
+	}
+
+	query += fmt.Sprintf(" LIMIT %d OFFSET %d", params.Limit, params.Offset)
+	fmt.Printf("query string: %s\n", query)
 	return query
 }
