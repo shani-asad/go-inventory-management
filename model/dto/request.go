@@ -54,6 +54,7 @@ type RequestGetProduct struct {
 }
 
 type RequestUpsertProduct struct {
+	ID          int       `json:"-"`
 	Name        string    `json:"name" validate:"required,min=1,max=30"`
 	SKU         string    `json:"sku" validate:"required,min=1,max=30"`
 	Category    string    `json:"category" validate:"required,categoryEnum"`
