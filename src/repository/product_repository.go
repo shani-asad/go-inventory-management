@@ -33,7 +33,7 @@ func (r *ProductRepository) SearchSku(ctx context.Context, params dto.SearchSkuP
 }
 
 func constructQuery(params dto.SearchSkuParams) string {
-	query := "SELECT * FROM products WHERE is_vailable = true"
+	query := "SELECT * FROM products WHERE is_available = true"
 	if params.Name != "" {
 		query += fmt.Sprintf(" AND LOWER(name) LIKE LOWER('%%%s%%')", params.Name)
 	}
