@@ -82,7 +82,7 @@ func main() {
 	r.POST("/v1/product", productHandler.CreateProduct)
 	r.GET("/v1/product", productHandler.GetProduct)
 	r.PUT("/v1/product", productHandler.UpdateProduct)
-	r.DELETE("/v1/product/{id}", productHandler.DeleteProduct)
+	r.DELETE("/v1/product/:id", productHandler.DeleteProduct)
 
 	authorized := r.Group("")
 	authorized.Use(middleware.AuthMiddleware)
