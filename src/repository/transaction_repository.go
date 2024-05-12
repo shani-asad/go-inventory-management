@@ -17,7 +17,13 @@ func NewTransactionRepository(db *sql.DB) TransactionRepositoryInterface {
 
 func (r *TransactionRepository) GetTransactions(ctx context.Context, params dto.GetTransactionRequest) (response []dto.TransactionData, err error) {
 
-	query := "SELECT * FROM transactions t WHERE 1 = 1"
+	query := `SELECT
+    id,
+    customer_id,
+    paid,
+    change,
+    created_at
+    FROM transactions t WHERE 1 = 1`
 
 	if params.CustomerId != "" {
 		query += fmt.Sprintf(" AND t.customer_id = '%s'", params.CustomerId)
@@ -31,10 +37,6 @@ func (r *TransactionRepository) GetTransactions(ctx context.Context, params dto.
 
 	query += fmt.Sprintf(" LIMIT %d OFFSET %d", params.Limit, params.Offset)
 
-
-	if err != nil {
-        panic(err)
-    }
 	
 	rows, err := r.db.QueryContext(context.Background(), query)
 
@@ -62,12 +64,14 @@ func (r *TransactionRepository) GetTransactions(ctx context.Context, params dto.
             &transaction.CreatedAt,
         )
         if err != nil {
+            fmt.Println("Error in San transaction rows", err)
             panic(err)
         }
 
         // Query product details and populate ProductDetails field
         productDetails, err := getProductDetails(r.db, transaction.TransactionID)
         if err != nil {
+            fmt.Println("Error in getProductDetails", err)
             panic(err)
         }
         transaction.ProductDetails = productDetails
@@ -76,11 +80,6 @@ func (r *TransactionRepository) GetTransactions(ctx context.Context, params dto.
         transactions = append(transactions, transaction)
     }
 	
-	// Check for errors during row iteration
-    if err := rows.Err(); err != nil {
-        panic(err)
-    }
-
     // Print the result
     fmt.Println(transactions)
 	return transactions, err
