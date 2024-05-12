@@ -7,12 +7,12 @@ CREATE TABLE products (
     name VARCHAR(255),
     sku VARCHAR(255),
     category product_category,
-    imageUrl VARCHAR(255),
+    image_url VARCHAR(255),
     notes VARCHAR(255),
     price INT,
     stock INT,
     location VARCHAR(255),
-    isAvailable BOOLEAN,
+    is_available BOOLEAN,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

@@ -22,7 +22,7 @@ import (
 func main() {
 	r := server.InitServer()
 
-	if(os.Getenv("DEVELOPER_NAME") != "naja"){
+	if os.Getenv("DEVELOPER_NAME") != "naja" {
 		err := godotenv.Load()
 		if err != nil {
 			fmt.Println("Error loading .env file:", err)
@@ -48,13 +48,13 @@ func main() {
 
 	db := db.InitPostgreDB(postgreConfig)
 
-	if(os.Getenv("DEVELOPER_NAME") == "naja"){
+	if os.Getenv("DEVELOPER_NAME") == "naja" {
 		// run migrations
 		m, err := migrate.New(os.Getenv("MIGRATION_PATH"), os.Getenv("DATABASE_URL"))
 		if err != nil {
 			log.Fatal("Error creating migration instance: ", err)
 		}
-	
+
 		// Run the migration up to the latest version
 		if err := m.Up(); err != nil && err != migrate.ErrNoChange {
 			log.Fatal("Error applying migrations:", err)
@@ -62,7 +62,6 @@ func main() {
 	}
 
 	fmt.Println("Migration successfully applied")
-
 
 	helper := helpers.NewHelper()
 
@@ -76,11 +75,13 @@ func main() {
 
 	// USECASE
 	authUsecase := usecase.NewAuthUsecase(staffRepository, helper)
+	productUsecase := usecase.NewProductUsecase(productRepository, helper)
 	skuUsecase := usecase.NewSkuUsecase(productRepository)
 	customerUsecase := usecase.NewCustomerUsecase(customerRepository)
 
 	// HANDLER
 	authHandler := handler.NewAuthHandler(authUsecase)
+	productHandler := handler.NewProductHandler(productUsecase)
 	skuHandler := handler.NewSkuHandler(skuUsecase)
 	customerHandler := handler.NewCustomerHandler(customerUsecase)
 
@@ -97,6 +98,11 @@ func main() {
 
 	authorized := r.Group("")
 	authorized.Use(middleware.AuthMiddleware)
+
+	authorized.POST("/v1/product", productHandler.CreateProduct)
+	authorized.GET("/v1/product", productHandler.GetProduct)
+	authorized.PUT("/v1/product", productHandler.UpdateProduct)
+	authorized.DELETE("/v1/product/:id", productHandler.DeleteProduct)
 
 	r.Run()
 }

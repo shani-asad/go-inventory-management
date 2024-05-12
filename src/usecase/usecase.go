@@ -11,12 +11,18 @@ type AuthUsecaseInterface interface {
 	GetStaffByPhoneNumber(email string) (exists bool, err error)
 }
 
+type ProductUsecaseInterface interface {
+	CreateProduct(dto.RequestUpsertProduct) (dto.ResponseCreateProduct, error)
+	GetProduct(dto.RequestGetProduct) (dto.ResponseGetProduct, error)
+	UpdateProduct(dto.RequestUpsertProduct) (statusCode int)
+	DeleteProduct(id int) (statusCode int)
+}
 type SkuUsecaseInterface interface {
 	Search(request dto.SearchSkuParams) ([]dto.SearchSkuResponse, error)
 }
 
 type CustomerUsecaseInterface interface {
-  RegisterCustomer(request dto.RegisterCustomerRequest) (customer string, err error)
-  SearchCustomers(request dto.SearchCustomersRequest) (customers []dto.CustomerDTO, err error)
+	RegisterCustomer(request dto.RegisterCustomerRequest) (customer string, err error)
+	SearchCustomers(request dto.SearchCustomersRequest) (customers []dto.CustomerDTO, err error)
 	GetCustomerByPhoneNumber(phoneNumber string) (exists bool, err error)
 }
