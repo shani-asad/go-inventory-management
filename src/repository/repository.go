@@ -16,7 +16,7 @@ type ProductRepositoryInterface interface {
 	GetProduct(ctx context.Context, data dto.RequestGetProduct) (response []database.Product, err error)
 	UpdateProduct(ctx context.Context, data database.Product) (response database.Product, err error)
 	DeleteProduct(ctx context.Context, id int) (statusCode int)
-	SearchSku(context.Context, dto.SearchSkuParams) ([]dto.SearchSkuResponse, error)
+	SearchSku(context.Context, dto.SearchSkuParams) ([]dto.SkuData, error)
 }
 
 type CustomerRepositoryInterface interface {

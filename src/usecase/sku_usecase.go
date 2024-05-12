@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"fmt"
 	"inventory-management/model/dto"
 	"inventory-management/src/repository"
 )
@@ -16,7 +17,7 @@ func NewSkuUsecase(
 	return &SkuUsecase{iProductRepository}
 }
 
-func (u *SkuUsecase) Search(request dto.SearchSkuParams) ([]dto.SearchSkuResponse, error) {
+func (u *SkuUsecase) Search(request dto.SearchSkuParams) ([]dto.SkuData, error) {
 	params := dto.SearchSkuParams{
 		Limit:    validateLimit(request.Limit), // TODO - validate user input is integer. Do this in handler when doing ShouldBindJSON()
 		Offset:   validateOffset(request.Offset),
@@ -29,6 +30,8 @@ func (u *SkuUsecase) Search(request dto.SearchSkuParams) ([]dto.SearchSkuRespons
 	}
 	
 	response, err := u.iProductRepository.SearchSku(context.TODO(), params)
+
+	fmt.Println("response di sku usecase", response)
 	
 	return response, err
 }

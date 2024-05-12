@@ -20,18 +20,21 @@ func NewSkuHandler(iSkuUsecase usecase.SkuUsecaseInterface) SkuHandlerInterface 
 
 func (h *SkuHandler) Search(c *gin.Context) {	
 	var limit, offset int
-	
 	if _, ok := c.Request.URL.Query()["limit"]; ok && c.Query("limit") != "" {
-		_, err := strconv.Atoi(c.Query("limit"))
+		val, err := strconv.Atoi(c.Query("limit"))
 		if err != nil {
 				limit = 5
+		} else {
+			limit = val
 		}
 	}
 
 	if _, ok := c.Request.URL.Query()["offset"]; ok && c.Query("offset") != "" {
-		_, err := strconv.Atoi(c.Query("offset"))
+		val, err := strconv.Atoi(c.Query("offset"))
 		if err != nil {
 				offset = 0
+		} else {
+			offset = val
 		}
 	}
 	
@@ -41,7 +44,7 @@ func (h *SkuHandler) Search(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"message": "success", "data": []string{} })
 		return
 	} else {
-		name = c.Query("offset")
+		name = c.Query("name")
 	}
 	
 	var category, sku, price string
@@ -68,8 +71,9 @@ func (h *SkuHandler) Search(c *gin.Context) {
 			inStock = false
 		} else {
 			isInstockValid = false
-		}
-		
+		}	
+	} else {
+		isInstockValid = false
 	}
 
 	params := dto.SearchSkuParams{
@@ -91,7 +95,7 @@ func (h *SkuHandler) Search(c *gin.Context) {
 		return
 	}
 
-	log.Println("get cat successful")
+	if(len(skuList) < 1) { skuList = []dto.SkuData{}}
 	c.JSON(http.StatusOK, gin.H{"message": "success", "data": skuList})
 }
 

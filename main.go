@@ -93,8 +93,8 @@ func main() {
 	r.POST("/v1/customer/register", customerHandler.RegisterCustomer)
 	r.GET("v1/customer", customerHandler.SearchCustomers)
 
-	// Search AKU
-	r.POST("/v1/product/customer", skuHandler.Search)
+	// Search SKU
+	r.GET("/v1/product/customer", skuHandler.Search)
 
 	authorized := r.Group("")
 	authorized.Use(middleware.AuthMiddleware)
