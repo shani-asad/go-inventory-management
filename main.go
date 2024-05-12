@@ -90,8 +90,6 @@ func main() {
 	// Auth
 	r.POST("/v1/staff/register", authHandler.Register)
 	r.POST("/v1/staff/login", authHandler.Login)
-	r.POST("/v1/customer/register", customerHandler.RegisterCustomer)
-	r.GET("v1/customer", customerHandler.SearchCustomers)
 
 	// Search SKU
 	r.GET("/v1/product/customer", skuHandler.Search)
@@ -103,6 +101,11 @@ func main() {
 	authorized.GET("/v1/product", productHandler.GetProduct)
 	authorized.PUT("/v1/product", productHandler.UpdateProduct)
 	authorized.DELETE("/v1/product/:id", productHandler.DeleteProduct)
+	authorized.POST("/v1/product/checkout", productHandler.CheckoutProduct)
+
+	// Customer
+	authorized.POST("/v1/customer/register", customerHandler.RegisterCustomer)
+	authorized.GET("v1/customer", customerHandler.SearchCustomers)
 
 	r.Run()
 }

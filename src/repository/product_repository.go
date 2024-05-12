@@ -210,3 +210,46 @@ func constructGetProductsQuery(params dto.RequestGetProduct) string {
 	fmt.Printf("query string: %s\n", query)
 	return query
 }
+
+func (r *ProductRepository) GetProductById(ctx context.Context, id int) (response database.Product,err error) {
+	err = r.db.QueryRowContext(ctx, "SELECT id, price, stock, is_available FROM products WHERE id = $1", id).Scan(&response.ID, &response.Price, &response.Stock, &response.IsAvailable)
+	return response, err
+}
+
+func (repo *ProductRepository) BeginTransaction(ctx context.Context) (*sql.Tx, error) {
+	return repo.db.BeginTx(ctx, nil)
+}
+
+func (repo *ProductRepository) UpdateProductStockInTransaction(ctx context.Context, tx *sql.Tx, productId string, quantity int) error {
+	query := "UPDATE products SET stock = stock - $1 WHERE id = $2"
+	_, err := tx.ExecContext(ctx, query, quantity, productId)
+	if err != nil {
+		// Rollback transaction on error
+		tx.Rollback()
+		return err
+	}
+	return nil
+}
+
+func (repo *ProductRepository) CreateTransaction(ctx context.Context, tx *sql.Tx, customerId, paid, change int) (int, error) {
+	query := "INSERT INTO transactions (customer_id, paid, change) VALUES ($1, $2, $3) RETURNING id"
+	var transactionId int
+	err := tx.QueryRowContext(ctx, query, customerId, paid, change).Scan(&transactionId)
+	if err != nil {
+		// Rollback transaction on error
+		tx.Rollback()
+		return 0, err
+	}
+	return transactionId, nil
+}
+
+func (repo *ProductRepository) AddTransactionProduct(ctx context.Context, tx *sql.Tx, transactionId, productId, quantity int) error {
+	query := "INSERT INTO transaction_products (transaction_id, product_id, quantity) VALUES ($1, $2, $3)"
+	_, err := tx.ExecContext(ctx, query, transactionId, productId, quantity)
+	if err != nil {
+		// Rollback transaction on error
+		tx.Rollback()
+		return err
+	}
+	return nil
+}

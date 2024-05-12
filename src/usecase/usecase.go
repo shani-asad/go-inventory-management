@@ -16,6 +16,7 @@ type ProductUsecaseInterface interface {
 	GetProduct(dto.RequestGetProduct) (dto.ResponseGetProduct, error)
 	UpdateProduct(dto.RequestUpsertProduct) (statusCode int)
 	DeleteProduct(id int) (statusCode int)
+	CheckoutProduct(dto.CheckoutProductRequest) error
 }
 type SkuUsecaseInterface interface {
 	Search(request dto.SearchSkuParams) ([]dto.SkuData, error)

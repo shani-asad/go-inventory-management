@@ -14,6 +14,7 @@ type ProductHandlerInterface interface {
 	GetProduct(c *gin.Context)
 	UpdateProduct(c *gin.Context)
 	DeleteProduct(c *gin.Context)
+	CheckoutProduct(c *gin.Context)
 }
 type SkuHandlerInterface interface {
 	Search(c *gin.Context)

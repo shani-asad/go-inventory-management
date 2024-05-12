@@ -33,9 +33,14 @@ type SearchCustomersRequest struct {
 	Name        string `json:"name"`
 }
 
+type ProductDetailDTO struct {
+	ProductID   string `json:"productId"`
+	Quantity    int    `json:"quantity"`
+}
+
 type CheckoutProductRequest struct {
 	CustomerID string `json:"customerId"`
-	//ProductDetails []ProductDetailDTO `json:"productDetails"`
+	ProductDetails []ProductDetailDTO `json:"productDetails"`
 	Paid   int `json:"paid"`
 	Change int `json:"change"`
 }
