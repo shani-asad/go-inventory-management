@@ -17,7 +17,7 @@ type StaffLoginData struct {
 }
 
 type CustomerDTO struct {
-	Id          string `json:"id"`
+	UserId      string `json:"userId"`
 	Name        string `json:"name"`
 	PhoneNumber string `json:"phoneNumber"`
 }
@@ -88,17 +88,16 @@ type ResponseStatusAndMessage struct {
 	Message string `json:"message"`
 }
 
-
 type ProductDetail struct {
-    ProductID string `json:"productId"`
-    Quantity  int    `json:"quantity"`
+	ProductID string `json:"productId"`
+	Quantity  int    `json:"quantity"`
 }
 
 type TransactionData struct {
-    TransactionID  string          `json:"transactionId"`
-    CustomerID     string          `json:"customerId"`
-    ProductDetails []ProductDetail `json:"productDetails"`
-    Paid           int             `json:"paid"`
-    Change         int             `json:"change"`
-    CreatedAt      time.Time       `json:"createdAt"`
+	TransactionID  string          `json:"transactionId"`
+	CustomerID     string          `json:"customerId"`
+	ProductDetails []ProductDetail `json:"productDetails"`
+	Paid           int             `json:"paid"`
+	Change         int             `json:"change"`
+	CreatedAt      time.Time       `json:"createdAt"`
 }
