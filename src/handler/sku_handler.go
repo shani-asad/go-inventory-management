@@ -27,6 +27,8 @@ func (h *SkuHandler) Search(c *gin.Context) {
 		} else {
 			limit = val
 		}
+	} else {
+		limit = 5
 	}
 
 	if _, ok := c.Request.URL.Query()["offset"]; ok && c.Query("offset") != "" {

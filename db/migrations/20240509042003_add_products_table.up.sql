@@ -1,12 +1,10 @@
 -- DROP TABLE IF EXISTS products;
 
-CREATE TYPE product_category AS ENUM ('Clothing', 'Accessories', 'Footwear', 'Beverages');
-
 CREATE TABLE products (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255),
     sku VARCHAR(255),
-    category product_category,
+    category VARCHAR(50),
     image_url VARCHAR(255),
     notes VARCHAR(255),
     price INT,
