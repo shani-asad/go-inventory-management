@@ -185,8 +185,8 @@ func (r *ProductRepository) SearchSku(ctx context.Context, params dto.SearchSkuP
 			&sku.Location,
 			&sku.CreatedAt,
 		)
-		fmt.Println("Error in product_repo > SearchSku > in loop rows: ", err)
 		if err != nil {
+			fmt.Println("Error in product_repo > SearchSku > in loop rows: ", err)
 			return nil, err
 		}
 		response = append(response, sku)

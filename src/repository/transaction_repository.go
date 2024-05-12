@@ -31,7 +31,7 @@ func (r *TransactionRepository) GetTransactions(ctx context.Context, params dto.
 
 	if params.CreatedAt == "asc" {
 		query += " ORDER BY created_at ASC"
-	} else if params.CreatedAt == "desc" {
+	} else {
 		query += " ORDER BY created_at DESC"
 	}
 

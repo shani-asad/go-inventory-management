@@ -14,18 +14,18 @@ import (
 
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
-	// "github.com/joho/godotenv"
+	"github.com/joho/godotenv"
 )
 
 func main() {
 	r := server.InitServer()
 
 	// if os.Getenv("DEVELOPER_NAME") != "naja" {
-		// err := godotenv.Load()
-		// if err != nil {
-		// 	fmt.Println("Error loading .env file:", err)
-		// 	return
-		// }
+		err := godotenv.Load()
+		if err != nil {
+			fmt.Println("Error loading .env file:", err)
+			return
+		}
 	// }
 
 	dbName := os.Getenv("DB_NAME")

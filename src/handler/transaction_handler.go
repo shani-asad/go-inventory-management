@@ -22,10 +22,7 @@ func NewTransactionHandler(iTransactionUsecase usecase.TransactionUsecaseInterfa
 func (h *TransactionHandler) GetTransactions(c *gin.Context){
 	var customerId string
 	
-	if _, ok := c.Request.URL.Query()["customerId"]; !ok{
-		c.JSON(http.StatusOK, gin.H{"message": "success", "data": []string{} })
-		return
-	} else {
+	if _, ok := c.Request.URL.Query()["customerId"]; ok{
 		customerId = c.Query("customerId")
 	}
 
@@ -37,6 +34,8 @@ func (h *TransactionHandler) GetTransactions(c *gin.Context){
 		} else {
 			limit = val
 		}
+	} else {
+		limit = 5
 	}
 
 	if _, ok := c.Request.URL.Query()["offset"]; ok && c.Query("offset") != "" {

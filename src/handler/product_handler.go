@@ -147,10 +147,11 @@ func (h *ProductHandler) CheckoutProduct(c *gin.Context) {
 	if err := h.iProductUsecase.CheckoutProduct(request); err != nil {
 		log.Println("Failed to checkout product >> ", err)
 		switch err.Error() {
+			//TODO - coba ini kalo 404 bisa ga
 		case usecase.ErrCustomerNotFound:
-			c.JSON(http.StatusNotFound, gin.H{"status": "error", "message": "Customer not found"})
+			c.JSON(http.StatusBadRequest, gin.H{"status": "error", "message": "Customer not found"})
 		case usecase.ErrProductNotFound:
-			c.JSON(http.StatusNotFound, gin.H{"status": "error", "message": "One of the products not found"})
+			c.JSON(http.StatusBadRequest, gin.H{"status": "error", "message": "One of the products not found"})
 		case usecase.ErrValidation:
 			c.JSON(http.StatusBadRequest, gin.H{"status": "bad request", "message": "Request doesn’t pass validation"})
 		case usecase.ErrPaidNotEnough:

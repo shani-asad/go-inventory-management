@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"inventory-management/model/dto"
 	"inventory-management/src/usecase"
 	"log"
@@ -42,12 +43,17 @@ func (h *SkuHandler) Search(c *gin.Context) {
 	
 	var name string
 	
-	if _, ok := c.Request.URL.Query()["name"]; !ok{
-		c.JSON(http.StatusOK, gin.H{"message": "success", "data": []string{} })
-		return
-	} else {
+	// if _, ok := c.Request.URL.Query()["name"]; !ok{
+	// 	c.JSON(http.StatusOK, gin.H{"message": "success", "data": []string{} })
+	// 	return
+	// } else {
+	// 	name = c.Query("name")
+	// }
+
+	if _, ok := c.Request.URL.Query()["name"]; ok{
 		name = c.Query("name")
 	}
+	fmt.Println(name)
 	
 	var category, sku, price string
 
